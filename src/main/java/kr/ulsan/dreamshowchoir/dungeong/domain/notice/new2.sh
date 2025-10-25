@@ -1,0 +1,1 @@
+git commit -m "refactor: Rename package directory to conform to naming conventions"
