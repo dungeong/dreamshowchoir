@@ -1,7 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.post;
 
 import jakarta.persistence.*;
-import kr.ulsan.dreamshowchoir.dungeong.domain.BaseTimeEntity;
+import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;

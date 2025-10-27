@@ -5,13 +5,11 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Role {
-
-    USER("ROLE_USER", "일반 사용자"),
-    MEMBER("ROLE_MEMBER", "합창 단원"),
-    ADMIN("ROLE_ADMIN", "관리자");
+public enum JoinStatus {
+    PENDING("PENDING", "대기 중"),
+    APPROVED("APPROVED", "승인됨"),
+    REJECTED("REJECTED", "거절됨");
 
     private final String key;
     private final String title;
-
 }
