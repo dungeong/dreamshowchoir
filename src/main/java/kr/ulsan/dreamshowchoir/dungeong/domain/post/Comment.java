@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "\"Comment\"")
 @EntityListeners(AuditingEntityListener.class)
-@SQLDelete(sql = "UPDATE \"Comment\" SET DELETED_AT = CURRENT_TIMESTAMP WHERE COMMENT_ID = ?")
-@Where(clause = "DELETED_AT IS NULL")
+@SQLDelete(sql = "UPDATE \"Comment\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"COMMENT_ID\" = ?")
+@Where(clause = "\"DELETED_AT\" IS NULL")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,8 +13,8 @@ import org.hibernate.annotations.Where;
 @Builder
 @Entity
 @Table(name = "\"Guestbook\"")
-@SQLDelete(sql = "UPDATE \"Guestbook\" SET DELETED_AT = CURRENT_TIMESTAMP WHERE GUESTBOOK_ID = ?")
-@Where(clause = "DELETED_AT IS NULL")
+@SQLDelete(sql = "UPDATE \"Guestbook\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"GUESTBOOK_ID\" = ?")
+@Where(clause = "\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Guestbook extends BaseTimeEntity {
 

@@ -14,8 +14,8 @@ import org.hibernate.annotations.Where;
 @Builder
 @Entity
 @Table(name = "\"Sheet\"")
-@SQLDelete(sql = "UPDATE \"Sheet\" SET DELETED_AT = CURRENT_TIMESTAMP WHERE SHEET_ID = ?")
-@Where(clause = "DELETED_AT IS NULL")
+@SQLDelete(sql = "UPDATE \"Sheet\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"SHEET_ID\" = ?")
+@Where(clause = "\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Sheet extends BaseTimeEntity {
 

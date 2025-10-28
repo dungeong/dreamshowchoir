@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "\"PerformanceSchedule\"")
-@SQLDelete(sql = "UPDATE \"PerformanceSchedule\" SET DELETED_AT = CURRENT_TIMESTAMP WHERE SCHEDULE_ID = ?")
-@Where(clause = "DELETED_AT IS NULL")
+@SQLDelete(sql = "UPDATE \"PerformanceSchedule\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"SCHEDULE_ID\" = ?")
+@Where(clause = "\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class PerformanceSchedule extends BaseTimeEntity {
     @Id

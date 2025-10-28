@@ -14,8 +14,8 @@ import org.hibernate.annotations.Where;
 @Builder
 @Entity
 @Table(name = "\"ActivityMaterial\"")
-@SQLDelete(sql = "UPDATE \"ActivityMaterial\" SET DELETED_AT = CURRENT_TIMESTAMP WHERE MATERIAL_ID = ?")
-@Where(clause = "DELETED_AT IS NULL")
+@SQLDelete(sql = "UPDATE \"ActivityMaterial\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"MATERIAL_ID\" = ?")
+@Where(clause = "\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class ActivityMaterial extends BaseTimeEntity {
 

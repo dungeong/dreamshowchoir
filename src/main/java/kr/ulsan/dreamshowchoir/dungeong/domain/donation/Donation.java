@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,7 +37,7 @@ public class Donation {
 
     @CreatedDate
     @Column(name = "CREATED_AT", nullable = false, updatable = false)
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
     // 생성자
     @Builder
