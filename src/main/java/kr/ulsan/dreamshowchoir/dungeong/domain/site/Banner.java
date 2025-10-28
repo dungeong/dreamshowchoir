@@ -39,12 +39,18 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive = true;
 
+    @Builder.Default
+    @Column(name = "ORDER_INDEX", nullable = false)
+    private Integer orderIndex = 0;
+
+
     // 수정
-    public void update(String imageKey, String imageName, String title, String description) {
+    public void update(String imageKey, String imageName, String title, String description, Integer orderIndex) {
         this.imageKey = imageKey;
         this.imageName = imageName;
         this.title = title;
         this.description = description;
+        this.orderIndex = orderIndex;
     }
 
     // 활성화/비활성화
