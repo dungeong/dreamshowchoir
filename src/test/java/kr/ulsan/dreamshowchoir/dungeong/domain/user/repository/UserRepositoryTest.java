@@ -13,15 +13,15 @@ import org.springframework.context.annotation.Import;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(JpaAuditingConfig.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import(JpaAuditingConfig.class) // JPA Auditing 기능(createdAt) 활성화
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // H2 DB 대신 PostgreSQL 사용
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
 
     @Test
-    @DisplayName("새로운 User를 저장하고 ID로 조회하면 성공한다.")
+    @DisplayName("새로운 User를 저장하고 ID로 조회하면 성공")
     void saveAndFindUserTest() {
         // given (준비)
         User newUser = User.builder()
@@ -46,7 +46,7 @@ class UserRepositoryTest {
     }
 
     @Test
-    @DisplayName("Email로 User를 조회하면 성공한다.")
+    @DisplayName("Email로 User를 조회하면 성공")
     void findByEmailTest() {
         // given (준비)
         User newUser = User.builder()

@@ -32,16 +32,20 @@ public class PostImage {
     @Column(name = "IMAGE_NAME", nullable = false)
     private String imageName;
 
+    @Column(name = "FILE_SIZE")
+    private Long fileSize;
+
     @CreatedDate
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt;
 
     // 생성자
     @Builder
-    public PostImage(kr.ulsan.dreamshowchoir.dungeong.domain.post.Post post, String imageKey, String imageName) {
+    public PostImage(Post post, String imageKey, String imageName, Long fileSize) {
         this.post = post;
         this.imageKey = imageKey;
         this.imageName = imageName;
+        this.fileSize = fileSize;
     }
 
     public void setPost(kr.ulsan.dreamshowchoir.dungeong.domain.post.Post post) {

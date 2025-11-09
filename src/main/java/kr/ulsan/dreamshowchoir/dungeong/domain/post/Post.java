@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "\"Post\"")
-@SQLDelete(sql = "UPDATE \"POST\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"POST_ID\" = ?")
+@SQLDelete(sql = "UPDATE \"Post\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"POST_ID\" = ?")
 @Where(clause = "\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Post extends BaseTimeEntity {

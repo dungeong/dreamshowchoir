@@ -5,7 +5,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,11 +32,19 @@ public class NoticeImage {
     @Column(name = "IMAGE_NAME", nullable = false)
     private String imageName;
 
+    @Column(name = "FILE_SIZE")
+    private Long fileSize;
+
+    @CreatedDate
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     // 생성자
     @Builder
-    public NoticeImage(Notice notice, String imageKey, String imageName) {
+    public NoticeImage(Notice notice, String imageKey, String imageName, Long fileSize) {
         this.notice = notice;
         this.imageKey = imageKey;
         this.imageName = imageName;
+        this.fileSize = fileSize;
     }
 }

@@ -70,5 +70,10 @@ public class User extends BaseTimeEntity {
         this.role = Role.MEMBER;
     }
 
+    // 양방향 관계 편의 메소드
+    public void setMemberProfile(MemberProfile memberProfile) {
+        this.memberProfile = memberProfile;
+    }
+
 
 }
