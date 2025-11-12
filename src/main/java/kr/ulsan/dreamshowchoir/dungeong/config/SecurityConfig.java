@@ -7,6 +7,7 @@ import kr.ulsan.dreamshowchoir.dungeong.config.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -60,8 +61,16 @@ public class SecurityConfig {
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
 
+                // 게시글 '읽기(GET)'도 'MEMBER' 권한 필요
+                .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").hasRole("MEMBER")
+
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
                 .requestMatchers("/api/auth/me").authenticated()
+
+                // 게시글 '쓰기'는 MEMBER 권한이 있어야 가능
+                .requestMatchers(HttpMethod.POST, "/api/posts").hasRole("MEMBER")
+
+                // (TODO: 게시글 수정/삭제 권한 설정)
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 // .requestMatchers("/api/admin/**").hasRole("ADMIN")
