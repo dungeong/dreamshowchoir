@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Request Header에서 "Bearer " 접두사를 제거하고 토큰 값만 추출합니다.
+     * Request Header에서 "Bearer " 접두사를 제거하고 토큰 값만 추출
      */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
