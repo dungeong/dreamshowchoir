@@ -61,6 +61,9 @@ public class SecurityConfig {
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
 
+                // "USER"만 (단원 가입 신청)
+                .requestMatchers("/api/join").hasRole("USER")
+
                 // 'MEMBER' 권한 필요
                 .requestMatchers(
                         "/api/posts/**",    // 게시글 및 댓글
@@ -69,7 +72,6 @@ public class SecurityConfig {
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
                 .requestMatchers("/api/auth/me/**").authenticated()
-
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")

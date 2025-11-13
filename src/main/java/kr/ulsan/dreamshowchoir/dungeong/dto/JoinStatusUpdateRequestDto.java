@@ -1,0 +1,15 @@
+package kr.ulsan.dreamshowchoir.dungeong.dto;
+
+import jakarta.validation.constraints.NotNull;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.JoinStatus;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class JoinStatusUpdateRequestDto {
+
+    @NotNull(message = "상태를 지정해야 합니다. (APPROVED or REJECTED)")
+    private JoinStatus status;
+}

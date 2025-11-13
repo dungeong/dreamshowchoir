@@ -12,8 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +33,7 @@ class JoinApplicationRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // 1. User 저장
+        // User 저장
         User testUser = User.builder()
                 .name("가입신청자")
                 .email("join@example.com")
@@ -91,10 +92,10 @@ class JoinApplicationRepositoryTest {
     @DisplayName("특정 상태(PENDING)의 신청 목록을 조회함 (findByStatus)")
     void findByStatusTest() {
         // given (준비)
-        // 1. PENDING 상태 신청 (savedTestUser)
+        // PENDING 상태 신청 (savedTestUser)
         joinApplicationRepository.save(JoinApplication.builder().user(savedTestUser).part("테너").build());
 
-        // 2. 다른 유저(user2)의 PENDING 신청
+        // 다른 유저(user2)의 PENDING 신청
         User user2 = userRepository.saveAndFlush(User.builder()
                 .name("신청자2")
                 .email("join2@example.com")
@@ -105,10 +106,11 @@ class JoinApplicationRepositoryTest {
         joinApplicationRepository.save(JoinApplication.builder().user(user2).part("베이스").build());
 
         // when (실행)
-        List<JoinApplication> pendingApplications = joinApplicationRepository.findByStatus(JoinStatus.PENDING);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<JoinApplication> pendingApplicationsPage = joinApplicationRepository.findByStatus(JoinStatus.PENDING, pageable);
 
         // then (검증)
-        assertThat(pendingApplications).hasSize(2);
+        assertThat(pendingApplicationsPage.getContent()).hasSize(2);
     }
 
     @Test
