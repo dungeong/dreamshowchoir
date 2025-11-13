@@ -53,7 +53,12 @@ public class Comment {
     }
 
     public void update(String content) {
-        this.content = content;
+        final String SUFFIX = " (수정됨)";
+        if (content != null && !content.endsWith(SUFFIX)) {
+            this.content += SUFFIX;
+        } else {
+            this.content = content;
+        }
     }
 
     public void softDelete() {
