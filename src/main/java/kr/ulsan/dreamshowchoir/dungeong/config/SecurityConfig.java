@@ -61,22 +61,18 @@ public class SecurityConfig {
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
 
-                // 게시글 '읽기(GET)'도 'MEMBER' 권한 필요
-                .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").hasRole("MEMBER")
+                // 'MEMBER' 권한 필요
+                .requestMatchers(
+                        "/api/posts/**",    // 게시글 및 댓글
+                        "/api/member/**"    // 멤버 하위
+                ).hasAnyRole("MEMBER", "ADMIN")
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
-                .requestMatchers("/api/auth/me").authenticated()
+                .requestMatchers("/api/auth/me/**").authenticated()
 
-                // 게시글 '쓰기'는 MEMBER 권한이 있어야 가능
-                .requestMatchers(HttpMethod.POST, "/api/posts").hasRole("MEMBER")
-
-                // (TODO: 게시글 수정/삭제 권한 설정)
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
-                // .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                // (단원 권한) /api/member/** 는 'MEMBER' 역할(Role)이 있어야만 허용
-                // .requestMatchers("/api/member/**").hasRole("MEMBER")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                 // 그 외 모든 요청은 '인증'된 사용자만 접근 가능
                 .anyRequest().authenticated()
