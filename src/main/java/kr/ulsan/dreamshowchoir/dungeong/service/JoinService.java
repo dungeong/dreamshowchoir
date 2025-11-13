@@ -13,7 +13,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.JoinApplicationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.JoinApplicationResponseDto;
 import jakarta.persistence.EntityNotFoundException;
-import kr.ulsan.dreamshowchoir.dungeong.dto.JoinStatusUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.StatusUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -104,7 +104,15 @@ public class JoinService {
      * @param requestDto 변경할 상태 (APPROVED or REJECTED)
      * @return 변경된 신청서 정보 DTO
      */
-    public JoinApplicationResponseDto updateJoinApplicationStatus(Long joinId, JoinStatusUpdateRequestDto requestDto) {
+    public JoinApplicationResponseDto updateJoinApplicationStatus(Long joinId, StatusUpdateRequestDto requestDto) {
+
+        // String을 JoinStatus Enum으로 변환
+        JoinStatus newStatus;
+        try {
+            newStatus = JoinStatus.valueOf(requestDto.getStatus().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("요청 상태(APPROVED/REJECTED)가 올바르지 않습니다.");
+        }
 
         // 신청서 조회
         JoinApplication application = joinApplicationRepository.findById(joinId)
@@ -112,8 +120,6 @@ public class JoinService {
 
         // 신청자(User) 조회
         User applicant = application.getUser();
-
-        JoinStatus newStatus = requestDto.getStatus();
         String notificationMessage;
 
         if (newStatus == JoinStatus.APPROVED) {

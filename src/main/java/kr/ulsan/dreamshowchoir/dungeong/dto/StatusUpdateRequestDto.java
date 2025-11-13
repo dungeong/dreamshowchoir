@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JoinStatusUpdateRequestDto {
+public class StatusUpdateRequestDto {
 
     @NotNull(message = "상태를 지정해야 합니다. (APPROVED or REJECTED)")
-    private JoinStatus status;
+    private String status;
 }

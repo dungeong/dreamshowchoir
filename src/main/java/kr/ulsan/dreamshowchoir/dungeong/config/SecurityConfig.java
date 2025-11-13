@@ -71,7 +71,10 @@ public class SecurityConfig {
                 ).hasAnyRole("MEMBER", "ADMIN")
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
-                .requestMatchers("/api/auth/me/**").authenticated()
+                .requestMatchers(
+                        "/api/auth/me/**",
+                        "/api/donations/**"
+                ).authenticated()
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
