@@ -53,7 +53,12 @@ public class Post extends BaseTimeEntity {
     }
 
     public void update(String title, String content) {
-        this.title = title;
+        final String SUFFIX = " (수정됨)";
+        if (title != null && !title.endsWith(SUFFIX)) {
+            this.title += SUFFIX;
+        } else {
+            this.title = title;
+        }
         this.content = content;
     }
 }
