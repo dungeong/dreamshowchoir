@@ -68,6 +68,7 @@ public class SecurityConfig {
                         "/swagger-ui.html", // Swagger UI
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")
@@ -87,9 +88,15 @@ public class SecurityConfig {
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/notices/**").hasRole("ADMIN")   // 공지사항 쓰기
-                .requestMatchers(HttpMethod.PATCH, "/api/notices/**").hasRole("ADMIN")  // 공지사항 수정
-                .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasRole("ADMIN") // 공지사항 삭제
+                // 공지사항
+                .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/notices/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasRole("ADMIN")
+                // FAQ
+                .requestMatchers(HttpMethod.POST, "/api/faq/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/faq/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/faq/**").hasRole("ADMIN")
+
 
                 // 그 외 모든 요청은 '인증'된 사용자만 접근 가능
                 .anyRequest().authenticated()
