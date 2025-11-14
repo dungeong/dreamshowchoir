@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.config;
 
+import kr.ulsan.dreamshowchoir.dungeong.config.auth.CustomAuthenticationEntryPoint;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginFailureHandler;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginSuccessHandler;
@@ -23,6 +24,7 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean // 이 메소드가 반환하는 SecurityFilterChain 객체를 Spring Bean으로 등록
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,6 +49,12 @@ public class SecurityConfig {
         // (TODO: 나중에 CORS 설정은 Next.js와 연동 시 필요)
         // http.cors(cors -> cors.configurationSource(...));
 
+        // 비로그인 예외 처리
+        http.exceptionHandling(exception -> exception
+                // 인증 진입점을 CustomAuthenticationEntryPoint로 지정
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+        );
+
 
         // --------------- API 엔드포인트별 접근 권한 설정
 
@@ -69,6 +77,7 @@ public class SecurityConfig {
                         "/api/posts/**",    // 게시글 및 댓글
                         "/api/member/**"    // 멤버 하위
                 ).hasAnyRole("MEMBER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/notices/**").hasAnyRole("MEMBER", "ADMIN")   // 공지사항 읽기
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
                 .requestMatchers(
@@ -78,6 +87,9 @@ public class SecurityConfig {
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/notices/**").hasRole("ADMIN")   // 공지사항 쓰기
+                .requestMatchers(HttpMethod.PATCH, "/api/notices/**").hasRole("ADMIN")  // 공지사항 수정
+                .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasRole("ADMIN") // 공지사항 삭제
 
                 // 그 외 모든 요청은 '인증'된 사용자만 접근 가능
                 .anyRequest().authenticated()
@@ -85,7 +97,6 @@ public class SecurityConfig {
 
 
         // ------------- OAuth2 로그인 설정
-
 
         http.oauth2Login(oauth2 -> oauth2
 
