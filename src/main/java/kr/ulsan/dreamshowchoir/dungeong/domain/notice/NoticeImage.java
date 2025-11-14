@@ -19,7 +19,7 @@ public class NoticeImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "IMAGE_ID")
     private Long imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
