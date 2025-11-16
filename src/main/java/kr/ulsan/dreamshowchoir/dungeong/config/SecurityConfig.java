@@ -69,6 +69,7 @@ public class SecurityConfig {
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ
+                .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()     // 문의 생성
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")

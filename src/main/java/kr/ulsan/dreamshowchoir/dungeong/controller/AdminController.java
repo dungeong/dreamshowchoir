@@ -2,11 +2,9 @@ package kr.ulsan.dreamshowchoir.dungeong.controller;
 
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
-import kr.ulsan.dreamshowchoir.dungeong.dto.DonationResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.JoinApplicationResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.StatusUpdateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.PageResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.*;
 import kr.ulsan.dreamshowchoir.dungeong.service.DonationService;
+import kr.ulsan.dreamshowchoir.dungeong.service.InquiryService;
 import kr.ulsan.dreamshowchoir.dungeong.service.JoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin") // 1. 관리자 API의 공통 주소
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
 
     private final JoinService joinService;
     private final DonationService donationService;
-    // (TODO: 나중에 다른 관리자용 서비스도 주입)
+    private final InquiryService inquiryService;
+
+    // ---------------------------------- 가입 신청 ----------------------------------
 
     /**
      * (관리자용) '대기 중'인 가입 신청 목록을 조회하는 API
@@ -57,6 +57,8 @@ public class AdminController {
         JoinApplicationResponseDto updatedApplication = joinService.updateJoinApplicationStatus(joinId, requestDto);
         return ResponseEntity.ok(updatedApplication);
     }
+
+    // ---------------------------------- 후원 ----------------------------------
 
     /**
      * (관리자용) 상태별 후원 목록을 조회하는 API
@@ -93,5 +95,37 @@ public class AdminController {
     ) {
         DonationResponseDto updatedDonation = donationService.updateDonationStatus(donationId, requestDto);
         return ResponseEntity.ok(updatedDonation);
+    }
+
+    // ---------------------------------- 문의 ----------------------------------
+
+    /**
+     * (관리자용) 상태별 문의 목록을 조회하는 API
+     * (GET /api/admin/inquiry?status=PENDING)
+     * (ADMIN 권한 필요)
+     */
+    @GetMapping("/inquiry")
+    public ResponseEntity<PageResponseDto<InquiryResponseDto>> getInquiriesByStatus(
+            // 6. ⭐️ 쿼리 파라미터로 status를 받음 (기본값 PENDING)
+            @RequestParam(defaultValue = "PENDING") String status,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) // 7. 오래된 순(ASC) 정렬
+            Pageable pageable
+    ) {
+        PageResponseDto<InquiryResponseDto> inquiryList = inquiryService.getInquiryListByStatus(status, pageable);
+        return ResponseEntity.ok(inquiryList);
+    }
+
+    /**
+     * (관리자용) 문의에 답변을 추가하는 API
+     * (PATCH /api/admin/inquiry/{inquiryId})
+     * (ADMIN 권한 필요)
+     */
+    @PatchMapping("/inquiry/{inquiryId}")
+    public ResponseEntity<InquiryResponseDto> replyToInquiry(
+            @PathVariable Long inquiryId,
+            @Valid @RequestBody InquiryReplyRequestDto requestDto
+    ) {
+        InquiryResponseDto updatedInquiry = inquiryService.replyToInquiry(inquiryId, requestDto);
+        return ResponseEntity.ok(updatedInquiry);
     }
 }
