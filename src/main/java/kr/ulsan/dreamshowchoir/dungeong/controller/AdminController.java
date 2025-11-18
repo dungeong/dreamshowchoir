@@ -6,10 +6,12 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.*;
 import kr.ulsan.dreamshowchoir.dungeong.service.DonationService;
 import kr.ulsan.dreamshowchoir.dungeong.service.InquiryService;
 import kr.ulsan.dreamshowchoir.dungeong.service.JoinService;
+import kr.ulsan.dreamshowchoir.dungeong.service.SiteContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +23,7 @@ public class AdminController {
     private final JoinService joinService;
     private final DonationService donationService;
     private final InquiryService inquiryService;
+    private final SiteContentService siteContentService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -127,5 +130,43 @@ public class AdminController {
     ) {
         InquiryResponseDto updatedInquiry = inquiryService.replyToInquiry(inquiryId, requestDto);
         return ResponseEntity.ok(updatedInquiry);
+    }
+
+    /**
+     * 통합 콘텐츠 생성 API (ADMIN 전용)
+     * (POST /api/admin/content)
+     */
+    @PostMapping("/content")
+    public ResponseEntity<SiteContentResponseDto> createSiteContent(
+            @Valid @RequestBody SiteContentCreateRequestDto requestDto
+    ) {
+        SiteContentResponseDto createdContent = siteContentService.createSiteContent(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdContent);
+    }
+
+    /**
+     * 통합 콘텐츠 수정 API (ADMIN 전용)
+     * (PATCH /api/admin/content/{contentKey})
+     * (예 : /api/admin/content/RECRUIT_GUIDE)
+     */
+    @PatchMapping("/content/{contentKey}")
+    public ResponseEntity<SiteContentResponseDto> updateSiteContent(
+            @PathVariable String contentKey,
+            @Valid @RequestBody SiteContentUpdateRequestDto requestDto
+    ) {
+        SiteContentResponseDto updatedContent = siteContentService.updateSiteContent(contentKey, requestDto);
+        return ResponseEntity.ok(updatedContent);
+    }
+
+    /**
+     * 통합 콘텐츠 삭제 API (ADMIN 전용)
+     * (DELETE /api/admin/content/{contentKey})
+     */
+    @DeleteMapping("/content/{contentKey}")
+    public ResponseEntity<Void> deleteSiteContent(
+            @PathVariable String contentKey
+    ) {
+        siteContentService.deleteSiteContent(contentKey);
+        return ResponseEntity.noContent().build();
     }
 }

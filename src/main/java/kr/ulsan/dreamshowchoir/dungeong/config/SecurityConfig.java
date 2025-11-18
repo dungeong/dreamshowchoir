@@ -71,6 +71,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()     // 문의 생성
                 .requestMatchers(HttpMethod.GET, "/api/history").permitAll()     // 연혁
+                .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()     // 통합 콘텐츠
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")
