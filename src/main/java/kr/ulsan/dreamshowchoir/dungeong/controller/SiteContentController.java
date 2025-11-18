@@ -24,7 +24,6 @@ public class SiteContentController {
 
     private final SiteContentService siteContentService;
 
-
     /**
      * 콘텐츠 조회 API (전체 공개)
      * (GET /api/content/{contentKey})

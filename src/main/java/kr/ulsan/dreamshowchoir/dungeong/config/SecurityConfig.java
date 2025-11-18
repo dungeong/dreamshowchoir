@@ -91,18 +91,6 @@ public class SecurityConfig {
 
                 // (관리자 권한) /api/admin/** 은 'ADMIN' 역할(Role)이 있어야만 허용
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // 공지사항
-                .requestMatchers(HttpMethod.POST, "/api/notices").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/notices/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasRole("ADMIN")
-                // FAQ
-                .requestMatchers(HttpMethod.POST, "/api/faq/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/faq/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/faq/**").hasRole("ADMIN")
-                // 연혁
-                .requestMatchers(HttpMethod.POST, "/api/history/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PATCH, "/api/history/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/history/**").hasRole("ADMIN")
 
 
                 // 그 외 모든 요청은 '인증'된 사용자만 접근 가능

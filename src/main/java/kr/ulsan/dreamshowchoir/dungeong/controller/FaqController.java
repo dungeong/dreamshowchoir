@@ -27,18 +27,6 @@ public class FaqController {
     private final FaqService faqService;
 
     /**
-     * FAQ 생성 API (ADMIN 전용)
-     * (POST /api/faq)
-     */
-    @PostMapping
-    public ResponseEntity<FaqResponseDto> createFaq(
-            @Valid @RequestBody FaqCreateRequestDto requestDto
-    ) {
-        FaqResponseDto createdFaq = faqService.createFaq(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdFaq);
-    }
-
-    /**
      * FAQ 목록 전체 조회 API (전체 허용)
      * (GET /api/faq)
      */
@@ -58,30 +46,5 @@ public class FaqController {
     ) {
         FaqResponseDto faqDetail = faqService.getFaqDetail(faqId);
         return ResponseEntity.ok(faqDetail);
-    }
-
-    /**
-     * FAQ 수정 API (ADMIN 전용)
-     * (PATCH /api/faq/{faqId})
-     */
-    @PatchMapping("/{faqId}")
-    public ResponseEntity<FaqResponseDto> updateFaq(
-            @PathVariable Long faqId,
-            @Valid @RequestBody FaqUpdateRequestDto requestDto
-    ) {
-        FaqResponseDto updatedFaq = faqService.updateFaq(faqId, requestDto);
-        return ResponseEntity.ok(updatedFaq);
-    }
-
-    /**
-     * FAQ 삭제 API (ADMIN 전용)
-     * (DELETE /api/faq/{faqId})
-     */
-    @DeleteMapping("/{faqId}")
-    public ResponseEntity<Void> deleteFaq(
-            @PathVariable Long faqId
-    ) {
-        faqService.deleteFaq(faqId);
-        return ResponseEntity.noContent().build();
     }
 }

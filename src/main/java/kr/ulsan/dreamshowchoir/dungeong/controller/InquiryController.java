@@ -20,7 +20,7 @@ public class InquiryController {
     private final InquiryService inquiryService;
 
     /**
-     * C: 새로운 문의를 생성하는 API (비로그인 가능)
+     * 새로운 문의를 생성하는 API (비로그인 가능)
      * (POST /api/inquiry)
      */
     @PostMapping
