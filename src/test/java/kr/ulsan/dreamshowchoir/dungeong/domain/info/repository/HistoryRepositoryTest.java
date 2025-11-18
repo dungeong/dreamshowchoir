@@ -49,17 +49,19 @@ class HistoryRepositoryTest {
         // 1. 2025년 (나중)
         History history2025 = historyRepository.saveAndFlush(History.builder()
                 .year(2025)
+                .month(11)
                 .content("제 1회 정기연주회")
                 .build());
 
         // 2. 2024년 (먼저)
         History history2024 = historyRepository.saveAndFlush(History.builder()
                 .year(2024)
+                .month(12)
                 .content("창단")
                 .build());
 
         // when (실행)
-        List<History> histories = historyRepository.findAllByOrderByYearAsc();
+        List<History> histories = historyRepository.findAllByOrderByYearAscMonthAsc();
 
         // then (검증)
         assertThat(histories).hasSize(2);
@@ -75,13 +77,14 @@ class HistoryRepositoryTest {
         // given (준비)
         History history = historyRepository.save(History.builder()
                 .year(2024)
+                .month(12)
                 .content("최초 창단")
                 .build());
         Long historyId = history.getHistoryId();
 
         // when (실행)
         History foundHistory = historyRepository.findById(historyId).orElseThrow();
-        foundHistory.update(2024, "드림쇼콰이어 공식 창단"); // 엔티티 편의 메소드 사용
+        foundHistory.update(2024, 12, "드림쇼콰이어 공식 창단"); // 엔티티 편의 메소드 사용
         historyRepository.saveAndFlush(foundHistory); // 변경사항 DB 반영
 
         // then (검증)

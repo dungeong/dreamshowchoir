@@ -70,6 +70,7 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()     // 문의 생성
+                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()     // 연혁
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")
@@ -97,6 +98,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/faq/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/faq/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/faq/**").hasRole("ADMIN")
+                // 연혁
+                .requestMatchers(HttpMethod.POST, "/api/history/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/api/history/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/history/**").hasRole("ADMIN")
 
 
                 // 그 외 모든 요청은 '인증'된 사용자만 접근 가능

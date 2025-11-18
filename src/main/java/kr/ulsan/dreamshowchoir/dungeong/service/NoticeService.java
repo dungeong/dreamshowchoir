@@ -118,10 +118,10 @@ public class NoticeService {
         // (TODO: Notice 엔티티에 update(title, content) 헬퍼 메소드 추가 필요)
         notice.update(requestDto.getTitle(), requestDto.getContent());
 
-        // 4. updatedAt 갱신을 위해 flush() 호출
+        // updatedAt 갱신을 위해 flush() 호출
         noticeRepository.flush();
 
-        // 5. 변경된 엔티티를 DTO로 변환하여 반환
+        // 변경된 엔티티를 DTO로 변환하여 반환
         return new NoticeResponseDto(notice);
     }
 

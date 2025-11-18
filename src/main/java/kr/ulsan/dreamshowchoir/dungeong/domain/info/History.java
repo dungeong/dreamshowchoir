@@ -27,13 +27,17 @@ public class History {
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "MONTH", nullable = false)
+    private Integer month;
+
     @CreatedDate
     @Column(name = "CREATED_AT", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     // 연혁 수정
-    public void update(Integer year, String content) {
+    public void update(Integer year, Integer month, String content) {
         this.year = year;
+        this.month = month;
         this.content = content;
     }
 }

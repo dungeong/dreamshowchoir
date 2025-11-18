@@ -23,7 +23,7 @@ public class InquiryService {
     private final RecaptchaService recaptchaService;
 
     /**
-     * C: 문의 생성 (비로그인 사용자)
+     * 문의 생성 (비로그인 사용자)
      */
     public InquiryResponseDto createInquiry(InquiryCreateRequestDto requestDto) {
 
@@ -45,7 +45,7 @@ public class InquiryService {
     }
 
     /**
-     * R: (관리자용) 특정 상태의 문의 목록 조회
+     * (관리자용) 특정 상태의 문의 목록 조회
      */
     @Transactional(readOnly = true)
     public PageResponseDto<InquiryResponseDto> getInquiryListByStatus(String statusString, Pageable pageable) {
@@ -71,7 +71,7 @@ public class InquiryService {
 
 
     /**
-     * U: (관리자용) 답변 추가
+     * (관리자용) 답변 추가
      */
     public InquiryResponseDto replyToInquiry(Long inquiryId, InquiryReplyRequestDto requestDto) {
 
