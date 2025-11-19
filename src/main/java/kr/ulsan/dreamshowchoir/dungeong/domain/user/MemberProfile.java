@@ -59,11 +59,22 @@ public class MemberProfile {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 프로필 수정
+     */
     public void updateProfile(String part, String interests, String myDream, String hashTags, String profileImageKey, LocalDateTime updatedAt) {
         this.part = part;
         this.interests = interests;
         this.myDream = myDream;
         this.hashTags = hashTags;
+        this.profileImageKey = profileImageKey;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 프로필 이미지만 수정
+     */
+    public void updateProfileImage(String profileImageKey) {
         this.profileImageKey = profileImageKey;
         this.updatedAt = LocalDateTime.now();
     }
