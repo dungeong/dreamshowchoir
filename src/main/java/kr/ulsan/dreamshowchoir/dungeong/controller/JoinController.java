@@ -1,7 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.JoinApplicationRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.JoinApplicationResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.JoinService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

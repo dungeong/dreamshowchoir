@@ -1,7 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.InquiryCreateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.InquiryResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.inquiry.InquiryCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.inquiry.InquiryResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.InquiryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

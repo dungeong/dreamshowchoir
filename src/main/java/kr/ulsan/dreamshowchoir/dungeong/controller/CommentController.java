@@ -1,8 +1,8 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.CommentCreateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.CommentResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.CommentUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

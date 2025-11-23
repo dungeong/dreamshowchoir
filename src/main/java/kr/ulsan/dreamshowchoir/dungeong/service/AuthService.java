@@ -6,7 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
-import kr.ulsan.dreamshowchoir.dungeong.dto.UserResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

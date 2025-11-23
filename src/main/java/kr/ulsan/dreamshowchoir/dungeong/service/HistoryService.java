@@ -2,9 +2,9 @@ package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.info.History;
 import kr.ulsan.dreamshowchoir.dungeong.domain.info.repository.HistoryRepository;
-import kr.ulsan.dreamshowchoir.dungeong.dto.HistoryCreateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.HistoryResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.HistoryUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryUpdateRequestDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

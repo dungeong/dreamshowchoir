@@ -1,7 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.DonationRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.DonationResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.DonationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

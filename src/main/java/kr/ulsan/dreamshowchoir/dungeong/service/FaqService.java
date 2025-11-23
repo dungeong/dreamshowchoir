@@ -2,9 +2,9 @@ package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.communicate.Faq;
 import kr.ulsan.dreamshowchoir.dungeong.domain.communicate.repository.FaqRepository;
-import kr.ulsan.dreamshowchoir.dungeong.dto.FaqCreateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.FaqResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.FaqUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqUpdateRequestDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

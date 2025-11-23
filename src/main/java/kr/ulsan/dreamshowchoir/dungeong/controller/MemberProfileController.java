@@ -1,6 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.UserResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.MemberProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

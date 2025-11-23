@@ -1,6 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.RecaptchaResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.RecaptchaResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

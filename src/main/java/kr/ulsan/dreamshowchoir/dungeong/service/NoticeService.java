@@ -5,8 +5,12 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.notice.repository.NoticeRepositor
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
-import kr.ulsan.dreamshowchoir.dungeong.dto.*;
 import jakarta.persistence.EntityNotFoundException;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeListResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

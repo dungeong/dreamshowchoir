@@ -2,7 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
-import kr.ulsan.dreamshowchoir.dungeong.dto.UserResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

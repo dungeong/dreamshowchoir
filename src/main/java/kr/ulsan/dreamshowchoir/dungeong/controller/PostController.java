@@ -1,6 +1,10 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
-import kr.ulsan.dreamshowchoir.dungeong.dto.*;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostListResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
