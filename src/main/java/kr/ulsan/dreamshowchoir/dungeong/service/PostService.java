@@ -1,6 +1,8 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Post;
+import kr.ulsan.dreamshowchoir.dungeong.domain.post.PostImage;
+import kr.ulsan.dreamshowchoir.dungeong.domain.post.repository.PostImageRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.repository.PostRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
@@ -13,6 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor // final 필드 생성자 자동 주입
@@ -21,6 +27,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostImageRepository postImageRepository;
+    private final S3Service s3Service;
 
     /**
      * 새로운 게시글을 생성한다.
@@ -29,7 +37,7 @@ public class PostService {
      * @param userId     현재 인증된 사용자의 ID (JWT 토큰에서 추출)
      * @return 생성된 게시글의 상세 정보 DTO
      */
-    public PostResponseDto createPost(PostCreateRequestDto requestDto, Long userId) {
+    public PostResponseDto createPost(PostCreateRequestDto requestDto, List<MultipartFile> files, Long userId) {
 
         // 작성자(User) 엔티티를 DB에서 조회
         User author = userRepository.findById(userId)
@@ -41,8 +49,17 @@ public class PostService {
         // Repository를 통해 엔티티를 DB에 저장
         Post savedPost = postRepository.save(newPost);
 
+        // 파일 업로드 및 PostImage 저장
+        uploadImages(files, savedPost);
+
+        postImageRepository.flush();
+
+        List<String> imageUrls = postImageRepository.findAllByPost(savedPost).stream()
+                .map(PostImage::getImageKey)
+                .collect(Collectors.toList());
+
         // 저장된 엔티티를 Response DTO로 변환하여 컨트롤러에 반환
-        return new PostResponseDto(savedPost);
+        return new PostResponseDto(savedPost, imageUrls);
     }
 
     /**
@@ -79,8 +96,13 @@ public class PostService {
         Post post = postRepository.findByIdWithUser(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + postId));
 
+        // 이미지 URL 리스트 추출
+        List<String> imageUrls = post.getPostImages().stream()
+                .map(PostImage::getImageKey)
+                .collect(Collectors.toList());
+
         // Post 엔티티를 PostResponseDto(상세 DTO)로 변환하여 반환
-        return new PostResponseDto(post);
+        return new PostResponseDto(post, imageUrls);
     }
 
     /**
@@ -91,7 +113,7 @@ public class PostService {
      * @param userId     현재 인증된 사용자의 ID (JWT 토큰에서 추출)
      * @return 수정된 게시글의 상세 정보 DTO
      */
-    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto requestDto, Long userId) {
+    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto requestDto, List<MultipartFile> files, Long userId) {
 
         // DB에서 게시글 조회 (User 정보 포함)
         Post post = postRepository.findByIdWithUser(postId)
@@ -102,14 +124,43 @@ public class PostService {
             throw new AccessDeniedException("이 게시글을 수정할 권한이 없습니다.");
         }
 
-        // 엔티티의 update 헬퍼 메소드를 호출하여 내용을 변경
+        // 텍스트 내용 수정
         post.update(requestDto.getTitle(), requestDto.getContent());
+
+        // 기존 이미지 삭제 로직
+        List<Long> deleteImageIds = requestDto.getDeleteImageIds();
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            List<PostImage> imagesToDelete = postImageRepository.findAllById(deleteImageIds);
+
+            for (PostImage image : imagesToDelete) {
+                // 이 이미지가 현재 게시글의 이미지가 맞는지 확인
+                if (!image.getPost().getPostId().equals(postId)) {
+                    continue;
+                }
+
+                // S3에서 파일 삭제
+                s3Service.deleteFile(image.getImageKey());
+
+                // DB에서 삭제
+                postImageRepository.delete(image);
+            }
+        }
+
+        // 새 이미지 업로드
+        uploadImages(files, post);
 
         // DB에 변경 사항을 즉시 강제 실행
         postRepository.flush();
+        postImageRepository.flush();    // 이미지 삭제/추가
 
-        return new PostResponseDto(post);
+        // 최신 이미지 목록 다시 조회
+        List<String> imageUrls = post.getPostImages().stream()
+                .map(PostImage::getImageKey)
+                .collect(Collectors.toList());
+
+        return new PostResponseDto(post, imageUrls);
     }
+
 
     /**
      * 게시글 1건을 (논리) 삭제
@@ -137,5 +188,26 @@ public class PostService {
 
         // Repository의 delete() 호출 -> @SQLDelete(논리삭제) 쿼리 실행
         postRepository.delete(post);
+    }
+    
+    // 공통 이미지 업로드 메소드
+    private void uploadImages(List<MultipartFile> files, Post post) {
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                // S3에 업로드 (폴더명: "post")
+                String imageUrl = s3Service.uploadFile(file, "post");
+
+                // PostImage 엔티티 생성
+                PostImage postImage = PostImage.builder()
+                        .post(post)
+                        .imageName(file.getOriginalFilename())
+                        .imageKey(imageUrl)
+                        .fileSize(file.getSize())
+                        .build();
+
+                // DB 저장
+                postImageRepository.save(postImage);
+            }
+        }
     }
 }

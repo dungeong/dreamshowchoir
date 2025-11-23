@@ -1,9 +1,12 @@
 package kr.ulsan.dreamshowchoir.dungeong.dto;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Post;
+import kr.ulsan.dreamshowchoir.dungeong.domain.post.PostImage;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class PostResponseDto {
@@ -15,6 +18,7 @@ public class PostResponseDto {
     private Long authorId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<String> imageUrls;
 
     // (TODO: PostImage 리스트 추가)
     // private List<PostImageDto> images;
@@ -22,7 +26,7 @@ public class PostResponseDto {
     /**
      * Entity를 DTO로 변환하는 생성자
      */
-    public PostResponseDto(Post post) {
+    public PostResponseDto(Post post, List<String> imageUrls) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
@@ -30,5 +34,6 @@ public class PostResponseDto {
         this.authorId = post.getUser().getUserId();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
+        this.imageUrls = imageUrls;
     }
 }

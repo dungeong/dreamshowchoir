@@ -8,9 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/posts") // 게시글 API의 공통 주소
@@ -27,14 +30,15 @@ public class PostController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 게시글의 상세 정보 (JSON)
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponseDto> createPost(
-            @Valid @RequestBody PostCreateRequestDto requestDto, // JSON Body와 Validation
+            @Valid @RequestPart(value = "dto") PostCreateRequestDto requestDto, // JSON Body와 Validation
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Long userId // JWT에서 추출한 사용자 ID
     ) {
 
         // Service를 호출하여 게시글 생성
-        PostResponseDto createdPost = postService.createPost(requestDto, userId);
+        PostResponseDto createdPost = postService.createPost(requestDto, files, userId);
 
         // 201 Created 상태 코드와 함께 생성된 게시글 정보 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
@@ -93,11 +97,12 @@ public class PostController {
     @PatchMapping("/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable Long postId,
-            @Valid @RequestBody PostUpdateRequestDto requestDto, // 수정용 DTO
+            @Valid @RequestPart(value = "dto") PostUpdateRequestDto requestDto, // 수정용 DTO
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Long userId // 권한 검사를 위한 사용자 ID
     ) {
         // Service를 호출하여 게시글 수정
-        PostResponseDto updatedPost = postService.updatePost(postId, requestDto, userId);
+        PostResponseDto updatedPost = postService.updatePost(postId, requestDto, files, userId);
 
         // 200 OK 상태와 함께 수정된 게시글 정보 반환
         return ResponseEntity.ok(updatedPost);
