@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 public class PostListResponseDto {
 
-    private Long postId;
-    private String title;
-    private String authorName;
-    private LocalDateTime createdAt;
+    private final Long postId;
+    private final String title;
+    private final String authorName;
+    private final LocalDateTime createdAt;
     // private int commentCount; // (TODO: 나중에 댓글 개수 추가)
 
     /**

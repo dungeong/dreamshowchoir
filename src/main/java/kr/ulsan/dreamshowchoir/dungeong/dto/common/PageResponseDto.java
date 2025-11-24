@@ -12,12 +12,12 @@ import java.util.List;
 @Getter
 public class PageResponseDto<T> {
 
-    private List<T> content;    // 현재 페이지의 데이터 리스트
-    private int pageNumber;     // 현재 페이지 번호 (0부터 시작)
-    private int pageSize;       // 페이지 당 데이터 개수
-    private int totalPages;     // 전체 페이지 수
-    private long totalElements; // 전체 데이터 개수
-    private boolean isLast;     // 마지막 페이지인지 여부
+    private final List<T> content;    // 현재 페이지의 데이터 리스트
+    private final int pageNumber;     // 현재 페이지 번호 (0부터 시작)
+    private final int pageSize;       // 페이지 당 데이터 개수
+    private final int totalPages;     // 전체 페이지 수
+    private final long totalElements; // 전체 데이터 개수
+    private final boolean isLast;     // 마지막 페이지인지 여부
 
     /**
      * Spring Data의 Page 객체를 받아 PageResponseDto로 변환

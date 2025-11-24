@@ -10,12 +10,12 @@ import java.time.LocalDateTime;
 @Getter
 public class DonationResponseDto {
 
-    private Long donationId;
-    private Long userId;
-    private Long amount;
-    private DonationType type;
-    private DonationStatus status;
-    private LocalDateTime createdAt;
+    private final Long donationId;
+    private final Long userId;
+    private final Long amount;
+    private final DonationType type;
+    private final DonationStatus status;
+    private final LocalDateTime createdAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

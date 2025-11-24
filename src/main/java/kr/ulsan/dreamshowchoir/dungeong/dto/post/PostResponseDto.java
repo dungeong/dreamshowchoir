@@ -9,14 +9,14 @@ import java.util.List;
 @Getter
 public class PostResponseDto {
 
-    private Long postId;
-    private String title;
-    private String content;
-    private String authorName; // User 엔티티 전체 대신, 작성자 이름만
-    private Long authorId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private List<String> imageUrls;
+    private final Long postId;
+    private final String title;
+    private final String content;
+    private final String authorName; // User 엔티티 전체 대신, 작성자 이름만
+    private final Long authorId;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
+    private final List<String> imageUrls;
 
     // (TODO: PostImage 리스트 추가)
     // private List<PostImageDto> images;

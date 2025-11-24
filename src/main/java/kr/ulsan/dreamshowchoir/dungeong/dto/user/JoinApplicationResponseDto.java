@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 public class JoinApplicationResponseDto {
 
-    private Long joinId;
-    private Long userId;
-    private String part;
-    private String interests;
-    private String myDream;
-    private String hashTags;
-    private JoinStatus status;
-    private LocalDateTime createdAt;
+    private final Long joinId;
+    private final Long userId;
+    private final String part;
+    private final String interests;
+    private final String myDream;
+    private final String hashTags;
+    private final JoinStatus status;
+    private final LocalDateTime createdAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

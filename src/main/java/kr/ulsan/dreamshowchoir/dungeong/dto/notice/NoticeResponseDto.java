@@ -8,13 +8,13 @@ import java.time.LocalDateTime;
 @Getter
 public class NoticeResponseDto {
 
-    private Long noticeId;
-    private String title;
-    private String content;
-    private String authorName;
-    private Long authorId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final Long noticeId;
+    private final String title;
+    private final String content;
+    private final String authorName;
+    private final Long authorId;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     // (TODO: 나중에 NoticeImage 리스트 추가)
 

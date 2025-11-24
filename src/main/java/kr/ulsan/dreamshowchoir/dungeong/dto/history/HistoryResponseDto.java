@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Getter
 public class HistoryResponseDto {
 
-    private Long historyId;
-    private Integer year;
-    private Integer month;
-    private String content;
-    private LocalDateTime createdAt;
+    private final Long historyId;
+    private final Integer year;
+    private final Integer month;
+    private final String content;
+    private final LocalDateTime createdAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

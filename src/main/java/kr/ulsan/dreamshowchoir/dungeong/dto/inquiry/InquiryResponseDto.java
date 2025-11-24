@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 @Getter
 public class InquiryResponseDto {
 
-    private Long inquiryId;
-    private String name;
-    private String email;
-    private String content;
-    private InquiryStatus status;
-    private String answer;
-    private LocalDateTime createdAt;
-    private LocalDateTime answeredAt;
+    private final Long inquiryId;
+    private final String name;
+    private final String email;
+    private final String content;
+    private final InquiryStatus status;
+    private final String answer;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime answeredAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

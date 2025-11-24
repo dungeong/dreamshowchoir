@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Getter
 public class NoticeListResponseDto {
 
-    private Long noticeId;
-    private String title;
-    private String authorName;
-    private LocalDateTime createdAt;
+    private final Long noticeId;
+    private final String title;
+    private final String authorName;
+    private final LocalDateTime createdAt;
 
     /**
      * Notice 엔티티를 NoticeListResponseDto로 변환

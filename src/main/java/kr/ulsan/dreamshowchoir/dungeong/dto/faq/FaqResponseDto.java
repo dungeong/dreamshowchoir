@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Getter
 public class FaqResponseDto {
 
-    private Long faqId;
-    private String question;
-    private String answer;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private final Long faqId;
+    private final String question;
+    private final String answer;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

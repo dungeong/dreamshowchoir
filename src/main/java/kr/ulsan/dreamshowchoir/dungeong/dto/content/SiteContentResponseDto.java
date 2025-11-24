@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 @Getter
 public class SiteContentResponseDto {
 
-    private String contentKey;
-    private String title;
-    private String content;
-    private LocalDateTime updatedAt;
+    private final String contentKey;
+    private final String title;
+    private final String content;
+    private final LocalDateTime updatedAt;
 
     /**
      * Entity를 DTO로 변환하는 생성자

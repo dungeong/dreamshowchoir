@@ -10,11 +10,11 @@ import lombok.Getter;
 public class UserResponseDto {
 
     // User 정보
-    private Long userId;
-    private String email;
-    private String name;
-    private String profileImageKey; // User의 기본 프로필 이미지
-    private Role role; // 사용자 권한 (USER, MEMBER, ADMIN)
+    private final Long userId;
+    private final String email;
+    private final String name;
+    private final String profileImageKey; // User의 기본 프로필 이미지
+    private final Role role; // 사용자 권한 (USER, MEMBER, ADMIN)
 
     // MemberProfile 정보 (단원일 경우)
     private String part;

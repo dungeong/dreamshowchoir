@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 @Getter
 public class CommentResponseDto {
 
-    private Long commentId;
-    private String content;
-    private String authorName;
-    private Long authorId;
-    private Long postId;
-    private LocalDateTime createdAt;
+    private final Long commentId;
+    private final String content;
+    private final String authorName;
+    private final Long authorId;
+    private final Long postId;
+    private final LocalDateTime createdAt;
 
     // (TODO: updatedAt은 Comment 엔티티에 없지만, 필요시 추가)
 
