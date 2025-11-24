@@ -68,7 +68,8 @@ public class SecurityConfig {
                         "/error",
                         "/swagger-ui.html", // Swagger UI
                         "/api-docs/**",      // Springdoc API 문서
-                        "/api/activity-materials/**"    // 활동 자료 조회
+                        "/api/activity-materials/**",   // 활동 자료 조회
+                        "/api/banners"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ 읽기
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()   // 문의 생성

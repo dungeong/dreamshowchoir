@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "\"Notice\"")
 @SQLDelete(sql = "UPDATE \"Notice\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"NOTICE_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Notice extends BaseTimeEntity {
 
@@ -40,7 +40,7 @@ public class Notice extends BaseTimeEntity {
 
     // 양방향 관계 설정
     @OneToMany(mappedBy = "notice", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<NoticeImage> noticeImages = new ArrayList<>();
+    private final List<NoticeImage> noticeImages = new ArrayList<>();
 
     // 생성자
     @Builder

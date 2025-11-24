@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "\"Gallery\"")
 @SQLDelete(sql = "UPDATE \"Gallery\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"GALLERY_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Gallery extends BaseTimeEntity {
 
@@ -40,7 +40,7 @@ public class Gallery extends BaseTimeEntity {
 
     // 양방향 관계 설정
     @OneToMany(mappedBy = "gallery", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GalleryMedia> galleryMedia = new ArrayList<>();
+    private final List<GalleryMedia> galleryMedia = new ArrayList<>();
 
     // 생성자
     @Builder

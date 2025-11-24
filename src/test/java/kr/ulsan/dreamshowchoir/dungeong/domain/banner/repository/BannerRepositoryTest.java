@@ -1,7 +1,7 @@
-package kr.ulsan.dreamshowchoir.dungeong.domain.site.repository;
+package kr.ulsan.dreamshowchoir.dungeong.domain.banner.repository;
 
 import kr.ulsan.dreamshowchoir.dungeong.config.JpaAuditingConfig;
-import kr.ulsan.dreamshowchoir.dungeong.domain.site.Banner;
+import kr.ulsan.dreamshowchoir.dungeong.domain.banner.Banner;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,7 @@ class BannerRepositoryTest {
                 .build());
 
         // when (실행)
-        List<Banner> activeBanners = bannerRepository.findAllByIsActiveTrueAndDeletedAtIsNullOrderByOrderIndexAsc();
+        List<Banner> activeBanners = bannerRepository.findAllByIsActiveTrueOrderByOrderIndexAsc();
 
         // then (검증)
         assertThat(activeBanners).hasSize(2); // 활성화된 배너 2개만 조회
@@ -114,7 +114,7 @@ class BannerRepositoryTest {
         assertThat(bannerRepository.findById(bannerId)).isEmpty();
 
         // (추가 검증) 비활성화된 배너 조회 쿼리에도 포함되면 안 됨
-        List<Banner> activeBanners = bannerRepository.findAllByIsActiveTrueAndDeletedAtIsNullOrderByOrderIndexAsc();
+        List<Banner> activeBanners = bannerRepository.findAllByIsActiveTrueOrderByOrderIndexAsc();
         assertThat(activeBanners).noneMatch(banner -> banner.getBannerId().equals(bannerId));
     }
 }

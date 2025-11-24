@@ -5,6 +5,8 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.banner.BannerResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.banner.BannerUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.StatusUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.content.SiteContentCreateRequestDto;
@@ -54,6 +56,7 @@ public class AdminController {
     private final NoticeService noticeService;
     private final GalleryService galleryService;
     private final ActivityMaterialService activityMaterialService;
+    private final BannerService bannerService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -444,6 +447,58 @@ public class AdminController {
         activityMaterialService.deleteMaterial(materialId);
 
         // 204 No Content: 성공적으로 삭제되었으며, 반환할 본문(Body)이 없음
+        return ResponseEntity.noContent().build();
+    }
+
+    // --------------------- 배너 ----------------------
+    /**
+     * (관리자용) 배너 등록 API
+     * (POST /api/admin/banners)
+     *
+     * @param title       배너 제목
+     * @param description 배너 설명 (선택)
+     * @param file        배너 이미지 파일
+     * @return 생성된 배너 정보 (JSON)
+     */
+    @PostMapping(value = "/banners", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> createBanner(
+            @RequestPart(value = "title") String title,
+            @RequestPart(value = "description", required = false) String description,
+            @RequestPart(value = "file") MultipartFile file
+    ) {
+        BannerResponseDto createdBanner = bannerService.createBanner(title, description, file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBanner);
+    }
+
+    /**
+     * (관리자용) 배너 수정 API (정보, 순서, 활성여부, 이미지 교체)
+     * (PATCH /api/admin/banners/{bannerId})
+     *
+     * @param bannerId   수정할 배너 ID
+     * @param requestDto 수정할 정보 (JSON)
+     * @param file       교체할 파일 (선택 사항)
+     * @return 수정된 배너 정보
+     */
+    @PatchMapping(value = "/banners/{bannerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BannerResponseDto> updateBanner(
+            @PathVariable Long bannerId,
+            @Valid @RequestPart(value = "dto") BannerUpdateRequestDto requestDto,
+            @RequestPart(value = "file", required = false) MultipartFile file // 필수 아님
+    ) {
+        BannerResponseDto updatedBanner = bannerService.updateBanner(bannerId, requestDto, file);
+        return ResponseEntity.ok(updatedBanner);
+    }
+
+    /**
+     * (관리자용) 배너 삭제 API
+     * (DELETE /api/admin/banners/{bannerId})
+     *
+     * @param bannerId 삭제할 배너 ID
+     * @return 204 No Content
+     */
+    @DeleteMapping("/banners/{bannerId}")
+    public ResponseEntity<Void> deleteBanner(@PathVariable Long bannerId) {
+        bannerService.deleteBanner(bannerId);
         return ResponseEntity.noContent().build();
     }
 }

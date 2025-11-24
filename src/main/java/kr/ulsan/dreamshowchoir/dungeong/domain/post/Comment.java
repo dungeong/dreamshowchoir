@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "\"Comment\"")
 @EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE \"Comment\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"COMMENT_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

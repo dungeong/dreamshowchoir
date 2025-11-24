@@ -1,11 +1,11 @@
-package kr.ulsan.dreamshowchoir.dungeong.domain.site;
+package kr.ulsan.dreamshowchoir.dungeong.domain.banner;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -14,7 +14,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "\"Banner\"")
 @SQLDelete(sql = "UPDATE \"Banner\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"BANNER_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Banner extends BaseTimeEntity {
 
@@ -42,7 +42,6 @@ public class Banner extends BaseTimeEntity {
     @Builder.Default
     @Column(name = "ORDER_INDEX", nullable = false)
     private Integer orderIndex = 0;
-
 
     // 수정
     public void update(String imageKey, String imageName, String title, String description, Integer orderIndex) {

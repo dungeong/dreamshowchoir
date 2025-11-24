@@ -2,20 +2,17 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.user;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "\"User\"")
 @SQLDelete(sql = "UPDATE \"User\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"USER_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate      // 수정 시 변경된 필드만 update
 public class User extends BaseTimeEntity {
 
