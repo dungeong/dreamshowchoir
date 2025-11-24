@@ -35,7 +35,7 @@ public class PostService {
     private final S3Service s3Service;
 
     /**
-     * 새로운 게시글을 생성한다.
+     * 새로운 게시글 생성
      *
      * @param requestDto 게시글 제목, 내용 DTO
      * @param userId     현재 인증된 사용자의 ID (JWT 토큰에서 추출)
@@ -110,7 +110,7 @@ public class PostService {
     }
 
     /**
-     * 게시글 1건을 수정합니다.
+     * 게시글 수정
      *
      * @param postId 수정할 게시글의 ID
      * @param requestDto 수정할 제목, 내용 DTO

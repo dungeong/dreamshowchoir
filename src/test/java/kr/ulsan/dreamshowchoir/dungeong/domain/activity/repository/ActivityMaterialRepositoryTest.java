@@ -1,7 +1,7 @@
-package kr.ulsan.dreamshowchoir.dungeong.domain.material.repository;
+package kr.ulsan.dreamshowchoir.dungeong.domain.activity.repository;
 
 import kr.ulsan.dreamshowchoir.dungeong.config.JpaAuditingConfig;
-import kr.ulsan.dreamshowchoir.dungeong.domain.material.ActivityMaterial;
+import kr.ulsan.dreamshowchoir.dungeong.domain.activity.ActivityMaterial;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
@@ -35,11 +35,11 @@ class ActivityMaterialRepositoryTest {
     void setUp() {
         // User 저장
         User testUser = User.builder()
-                .name("자료담당자")
-                .email("material@example.com")
+                .name("관리자")
+                .email("admin@example.com")
                 .oauthProvider("google")
-                .oauthId("google_material_123")
-                .role(Role.MEMBER)
+                .oauthId("google_admin_123")
+                .role(Role.ADMIN)
                 .build();
         savedTestUser = userRepository.saveAndFlush(testUser);
     }
@@ -66,8 +66,8 @@ class ActivityMaterialRepositoryTest {
         assertThat(foundMaterial.getMaterialId()).isEqualTo(savedMaterial.getMaterialId());
         assertThat(foundMaterial.getTitle()).isEqualTo("2025년 활동 보고서");
         assertThat(foundMaterial.getFileSize()).isEqualTo(5120L);
-        assertThat(foundMaterial.getUser().getName()).isEqualTo("자료담당자");
-        assertThat(foundMaterial.getCreatedAt()).isNotNull(); // BaseTimeEntity 검증
+        assertThat(foundMaterial.getUser().getRole()).isEqualTo(Role.ADMIN); // 권한 확인
+        assertThat(foundMaterial.getCreatedAt()).isNotNull();
     }
 
     @Test
@@ -91,7 +91,7 @@ class ActivityMaterialRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         // when (실행)
-        Page<ActivityMaterial> materialPage = activityMaterialRepository.findAllByOrderByCreatedAtDesc(pageRequest);
+        Page<ActivityMaterial> materialPage = activityMaterialRepository.findAll(pageRequest);
 
         // then (검증)
         assertThat(materialPage.getTotalElements()).isEqualTo(2);

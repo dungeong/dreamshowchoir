@@ -29,7 +29,7 @@ public class CommentService {
     private final UserRepository userRepository; // UserRepository 주입
 
     /**
-     * 새로운 댓글을 생성합니다.
+     * 새로운 댓글을 생성
      *
      * @param postId     댓글이 달릴 게시글의 ID
      * @param requestDto 댓글 내용 DTO

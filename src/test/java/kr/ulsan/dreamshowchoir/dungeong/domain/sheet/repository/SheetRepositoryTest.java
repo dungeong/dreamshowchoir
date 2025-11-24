@@ -16,24 +16,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // PostgreSQL 사용
-@Import(JpaAuditingConfig.class) // Auditing 기능(BaseTimeEntity) 활성화
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // 실제 DB(PostgreSQL) 사용
+@Import(JpaAuditingConfig.class) // BaseTimeEntity(Auditing) 활성화
 class SheetRepositoryTest {
 
     @Autowired
     private SheetRepository sheetRepository;
 
     @Autowired
-    private UserRepository userRepository; // Sheet는 User에 의존
+    private UserRepository userRepository;
 
     private User savedTestUser;
 
     @BeforeEach
     void setUp() {
-        // User 저장
+        // 테스트용 유저 생성 및 저장
         User testUser = User.builder()
                 .name("자료담당자")
                 .email("sheet@example.com")
@@ -45,91 +47,88 @@ class SheetRepositoryTest {
     }
 
     @Test
-    @DisplayName("새로운 Sheet를 저장하고 ID로 조회하면 성공")
+    @DisplayName("새로운 Sheet를 저장하고 ID로 조회하면 성공한다")
     void saveAndFindSheetTest() {
-        // given (준비)
+        // given
         Sheet newSheet = Sheet.builder()
                 .user(savedTestUser)
                 .fileKey("s3-sheet-key-123.pdf")
                 .fileName("꿈꾸지않으면.pdf")
-                .fileSize(2048L) // V2에서 추가한 fileSize
-                .isPublic(true) // 공개 자료로 설정
+                .fileSize(2048L)
+                // isPublic 설정 제거됨
                 .build();
 
-        // when (실행)
+        // when
         Sheet savedSheet = sheetRepository.save(newSheet);
 
-        // then (검증)
+        // then
         Sheet foundSheet = sheetRepository.findById(savedSheet.getSheetId()).orElseThrow();
 
         assertThat(foundSheet.getSheetId()).isEqualTo(savedSheet.getSheetId());
         assertThat(foundSheet.getFileName()).isEqualTo("꿈꾸지않으면.pdf");
         assertThat(foundSheet.getFileSize()).isEqualTo(2048L);
-        assertThat(foundSheet.isPublic()).isTrue();
         assertThat(foundSheet.getUser().getName()).isEqualTo("자료담당자");
-        assertThat(foundSheet.getCreatedAt()).isNotNull(); // BaseTimeEntity 검증
+        assertThat(foundSheet.getCreatedAt()).isNotNull(); // Auditing 동작 확인
     }
 
     @Test
-    @DisplayName("공개된(isPublic=true) 자료만 페이징 조회함")
-    void findByIsPublicTrueTest() {
-        // given (준비)
-        // 1. 공개 자료
-        sheetRepository.saveAndFlush(Sheet.builder()
+    @DisplayName("전체 악보 목록을 최신순으로 페이징 조회한다")
+    void findAllPagingTest() {
+        // given
+        // 악보 1 생성
+        sheetRepository.save(Sheet.builder()
                 .user(savedTestUser)
                 .fileKey("key1.pdf")
-                .fileName("공개악보1.pdf")
-                .isPublic(true)
+                .fileName("옛날악보.pdf")
+                .fileSize(100L)
                 .build());
 
-        // 2. 비공개 자료
-        sheetRepository.saveAndFlush(Sheet.builder()
+        // 악보 2 생성 (더 나중에 생성됨)
+        sheetRepository.save(Sheet.builder()
                 .user(savedTestUser)
-                .fileKey("key2.mp3")
-                .fileName("비공개음원.mp3")
-                .isPublic(false) // 비공개
+                .fileKey("key2.pdf")
+                .fileName("최신악보.pdf")
+                .fileSize(200L)
                 .build());
 
-        // 3. 공개 자료 2 (최신)
-        Sheet publicSheet2 = sheetRepository.saveAndFlush(Sheet.builder()
-                .user(savedTestUser)
-                .fileKey("key3.pdf")
-                .fileName("공개악보2.pdf")
-                .isPublic(true)
-                .build());
+        // save()만으로는 created_at이 같을 수도 있으므로 flush 처리하거나 약간의 텀이 필요할 수 있으나,
+        // DataJpaTest 환경에서는 순차 실행되므로 보통 ID 순서 = 시간 순서로 간주 가능.
+        sheetRepository.flush();
 
+        // 페이지 요청: 0페이지, 10개씩, 생성일 내림차순(DESC)
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // when (실행)
-        Page<Sheet> publicSheets = sheetRepository.findByIsPublicTrueOrderByCreatedAtDesc(pageRequest);
+        // when
+        // 사용자 정의 메서드가 아닌 기본 findAll(Pageable) 사용
+        Page<Sheet> sheetPage = sheetRepository.findAll(pageRequest);
 
-        // then (검증)
-        assertThat(publicSheets.getTotalElements()).isEqualTo(2); // 공개 자료 2개만 조회
-        assertThat(publicSheets.getContent()).hasSize(2);
-        // 최신순 정렬 검증 (공개악보2가 먼저)
-        assertThat(publicSheets.getContent().get(0).getSheetId()).isEqualTo(publicSheet2.getSheetId());
-        assertThat(publicSheets.getContent().get(0).getFileName()).isEqualTo("공개악보2.pdf");
+        // then
+        assertThat(sheetPage.getTotalElements()).isEqualTo(2); // 총 2개
+        List<Sheet> content = sheetPage.getContent();
+
+        // 최신순 정렬 확인 (ID가 더 큰 '최신악보.pdf'가 먼저 나와야 함)
+        assertThat(content.get(0).getFileName()).isEqualTo("최신악보.pdf");
+        assertThat(content.get(1).getFileName()).isEqualTo("옛날악보.pdf");
     }
 
     @Test
-    @DisplayName("Sheet를 논리 삭제하면 조회되지 않아야 함")
+    @DisplayName("Sheet를 삭제(Soft Delete)하면 조회되지 않아야 한다")
     void softDeleteTest() {
-        // given (준비)
+        // given
         Sheet newSheet = Sheet.builder()
                 .user(savedTestUser)
                 .fileKey("key_delete.pdf")
                 .fileName("삭제될악보.pdf")
-                .isPublic(true)
                 .build();
         Sheet savedSheet = sheetRepository.save(newSheet);
         Long sheetId = savedSheet.getSheetId();
 
-        // when (실행)
+        // when
         sheetRepository.delete(savedSheet);
-        sheetRepository.flush(); // DB 즉시 반영
+        sheetRepository.flush(); // 영속성 컨텍스트 반영 (UPDATE 쿼리 실행)
 
-        // then (검증)
-        // @Where(clause = "\"DELETED_AT\" IS NULL") 때문에 조회되면 안 됨
+        // then
+        // @Where(clause = "\"DELETED_AT\" IS NULL") 어노테이션 덕분에 조회되지 않아야 함
         assertThat(sheetRepository.findById(sheetId)).isEmpty();
     }
 }

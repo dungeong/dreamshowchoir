@@ -1,4 +1,4 @@
-package kr.ulsan.dreamshowchoir.dungeong.domain.material;
+package kr.ulsan.dreamshowchoir.dungeong.domain.activity;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
@@ -6,7 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,7 +15,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "\"ActivityMaterial\"")
 @SQLDelete(sql = "UPDATE \"ActivityMaterial\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"MATERIAL_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class ActivityMaterial extends BaseTimeEntity {
 

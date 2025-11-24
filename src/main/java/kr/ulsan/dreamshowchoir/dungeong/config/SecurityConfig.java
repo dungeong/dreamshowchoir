@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,7 +33,7 @@ public class SecurityConfig {
         // ---------------- CSRF, CORS, Form 로그인, HTTP Basic 인증 비활성화
 
         // CSRF(Cross-Site Request Forgery) 보호 비활성화 (JWT 사용 시 불필요)
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(AbstractHttpConfigurer::disable);
 
         // 세션(Session) 관리 정책 설정: 세션을 사용하지 않음 (STATELESS)
         // (JWT 기반 인증이므로 서버가 세션 상태를 저장할 필요 없음)
@@ -41,10 +42,10 @@ public class SecurityConfig {
         );
 
         // Form 로그인 방식 비활성화 (OAuth2 로그인을 사용할 것임)
-        http.formLogin(form -> form.disable());
+        http.formLogin(AbstractHttpConfigurer::disable);
 
         // HTTP Basic 인증 방식 비활성화
-        http.httpBasic(basic -> basic.disable());
+        http.httpBasic(AbstractHttpConfigurer::disable);
 
         // (TODO: 나중에 CORS 설정은 Next.js와 연동 시 필요)
         // http.cors(cors -> cors.configurationSource(...));
@@ -66,11 +67,12 @@ public class SecurityConfig {
                         "/login/**",
                         "/error",
                         "/swagger-ui.html", // Swagger UI
-                        "/api-docs/**"      // Springdoc API 문서
+                        "/api-docs/**",      // Springdoc API 문서
+                        "/api/activity-materials/**"    // 활동 자료 조회
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ 읽기
-                .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()     // 문의 생성
-                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()     // 연혁 읽기
+                .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()   // 문의 생성
+                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()    // 연혁 읽기
                 .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()     // 통합 콘텐츠 읽기
                 .requestMatchers(HttpMethod.GET, "/api/gallery/**").permitAll()     // 갤러리 읽기
 
@@ -80,13 +82,10 @@ public class SecurityConfig {
                 // 'MEMBER' 권한 필요
                 .requestMatchers(
                         "/api/posts/**",    // 게시글 및 댓글
-                        "/api/member/**"    // 멤버 하위
+                        "/api/member/**",   // 멤버 하위
+                        "/api/sheets/**"    // 악보 및 자료실
                 ).hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/notices/**").hasAnyRole("MEMBER", "ADMIN")   // 공지사항 읽기
-                .requestMatchers(HttpMethod.POST, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")  // 갤러리 쓰기
-                .requestMatchers(HttpMethod.PATCH, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")     // 갤러리 수정
-                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")    // 갤러리 삭제
-
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
                 .requestMatchers(

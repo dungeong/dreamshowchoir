@@ -6,7 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,7 +15,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @Table(name = "\"Sheet\"")
 @SQLDelete(sql = "UPDATE \"Sheet\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"SHEET_ID\" = ?")
-@Where(clause = "\"DELETED_AT\" IS NULL")
+@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Sheet extends BaseTimeEntity {
 
@@ -36,14 +36,4 @@ public class Sheet extends BaseTimeEntity {
 
     @Column(name = "FILE_SIZE")
     private Long fileSize;
-
-    @Column(name = "IS_PUBLIC", nullable = false)
-    @Builder.Default
-    private boolean isPublic = false;
-
-    // 업데이트
-    public void update(String fileName, boolean isPublic) {
-        this.fileName = fileName;
-        this.isPublic = isPublic;
-    }
 }

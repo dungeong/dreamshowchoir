@@ -2,6 +2,9 @@ package kr.ulsan.dreamshowchoir.dungeong.controller;
 
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
+import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.StatusUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.content.SiteContentCreateRequestDto;
@@ -11,6 +14,9 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.faq.FaqUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryCreateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.history.HistoryUpdateRequestDto;
@@ -26,9 +32,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -42,6 +52,8 @@ public class AdminController {
     private final HistoryService historyService;
     private final FaqService faqService;
     private final NoticeService noticeService;
+    private final GalleryService galleryService;
+    private final ActivityMaterialService activityMaterialService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -54,7 +66,7 @@ public class AdminController {
      */
     @GetMapping("/join-applications")
     public ResponseEntity<PageResponseDto<JoinApplicationResponseDto>> getPendingApplications(
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         PageResponseDto<JoinApplicationResponseDto> applicationList = joinService.getPendingApplications(pageable);
@@ -93,7 +105,7 @@ public class AdminController {
     public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationsByStatus(
             // 쿼리 파라미터로 status를 받음 (기본값 PENDING)
             @RequestParam(defaultValue = "PENDING") DonationStatus status,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC)
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC)
             Pageable pageable
     ) {
         PageResponseDto<DonationResponseDto> donationList = donationService.getDonationListByStatus(status, pageable);
@@ -127,9 +139,9 @@ public class AdminController {
      */
     @GetMapping("/inquiry")
     public ResponseEntity<PageResponseDto<InquiryResponseDto>> getInquiriesByStatus(
-            // 6. ⭐️ 쿼리 파라미터로 status를 받음 (기본값 PENDING)
+            // 쿼리 파라미터로 status를 받음 (기본값 PENDING)
             @RequestParam(defaultValue = "PENDING") String status,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) // 7. 오래된 순(ASC) 정렬
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) // 7. 오래된 순(ASC) 정렬
             Pageable pageable
     ) {
         PageResponseDto<InquiryResponseDto> inquiryList = inquiryService.getInquiryListByStatus(status, pageable);
@@ -324,6 +336,114 @@ public class AdminController {
             @AuthenticationPrincipal Long userId
     ) {
         noticeService.deleteNotice(noticeId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // -------------------------- 갤러리 --------------------------
+
+    /**
+     * (관리자용) 갤러리 게시글 생성 (이미지/비디오 첨부 가능)
+     * (POST /api/admin/gallery)
+     */
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<GalleryResponseDto> createGallery(
+            @Valid @RequestPart(value = "dto") GalleryCreateRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal Long userId
+    ) {
+        GalleryResponseDto createdGallery = galleryService.createGallery(requestDto, files, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdGallery);
+    }
+
+    /**
+     * (관리자용) 갤러리 게시글 수정 (미디어 추가/삭제 포함)
+     * (PATCH /api/admin/gallery)
+     */
+    @PatchMapping(value = "/{galleryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<GalleryResponseDto> updateGallery(
+            @PathVariable Long galleryId,
+            @Valid @RequestPart(value = "dto") GalleryUpdateRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
+            @AuthenticationPrincipal Long userId
+    ) {
+        GalleryResponseDto updatedGallery = galleryService.updateGallery(galleryId, requestDto, files, userId);
+        return ResponseEntity.ok(updatedGallery);
+    }
+
+    /**
+     * (관리자용) 갤러리 게시글 삭제 (논리 삭제)
+     * (DELETE /api/admin/gallery)
+     */
+    @DeleteMapping("/{galleryId}")
+    public ResponseEntity<Void> deleteGallery(
+            @PathVariable Long galleryId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        galleryService.deleteGallery(galleryId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    // -------------------------- 활동자료 관리 --------------------------
+
+
+    /**
+     * (관리자용) 활동자료 등록 API
+     * (POST /api/admin/activity-materials)
+     *
+     * @param requestDto 자료 제목, 내용 DTO (JSON)
+     * @param file       업로드할 파일 (MultipartFile)
+     * @param userId     JWT 토큰에서 추출한 관리자 ID
+     * @return 생성된 활동자료 상세 정보 (JSON)
+     */
+    @PostMapping(value = "/activity-materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ActivityMaterialResponseDto> createMaterial(
+            @Valid @RequestPart(value = "dto") ActivityMaterialCreateRequestDto requestDto,
+            @RequestPart(value = "file") MultipartFile file,
+            @AuthenticationPrincipal Long userId
+    ) {
+
+        // Service를 호출하여 활동자료 생성
+        ActivityMaterialResponseDto createdMaterial = activityMaterialService.createMaterial(requestDto, file, userId);
+
+        // 201 Created 상태 코드와 함께 생성된 자료 정보 반환
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdMaterial);
+    }
+
+    /**
+     * (관리자용) 활동자료 내용을 수정하는 API (파일 수정 불가, 텍스트만 수정)
+     * (PATCH /api/admin/activity-materials/{materialId})
+     *
+     * @param materialId URL 경로에서 추출한 자료 ID
+     * @param requestDto 수정할 제목, 내용 DTO (JSON)
+     * @return 수정된 활동자료 상세 정보 (JSON)
+     */
+    @PatchMapping("/activity-materials/{materialId}")
+    public ResponseEntity<ActivityMaterialResponseDto> updateMaterial(
+            @PathVariable Long materialId,
+            @Valid @RequestBody ActivityMaterialUpdateRequestDto requestDto
+    ) {
+
+        // Service를 호출하여 활동자료 내용 수정 (수정된 DTO 반환)
+        ActivityMaterialResponseDto updatedMaterial = activityMaterialService.updateMaterial(materialId, requestDto);
+
+        // 200 OK 상태와 함께 수정된 자료 정보 반환
+        return ResponseEntity.ok(updatedMaterial);
+    }
+
+    /**
+     * (관리자용) 활동자료를 삭제하는 API
+     * (DELETE /api/admin/activity-materials/{materialId})
+     *
+     * @param materialId URL 경로에서 추출한 자료 ID
+     * @return 204 No Content
+     */
+    @DeleteMapping("/activity-materials/{materialId}")
+    public ResponseEntity<Void> deleteMaterial(@PathVariable Long materialId) {
+
+        // Service를 호출하여 활동자료 삭제
+        activityMaterialService.deleteMaterial(materialId);
+
+        // 204 No Content: 성공적으로 삭제되었으며, 반환할 본문(Body)이 없음
         return ResponseEntity.noContent().build();
     }
 }
