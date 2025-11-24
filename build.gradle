@@ -52,9 +52,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // Swagger(Springdoc)
     implementation 'org.modelmapper:modelmapper:3.1.1'            // ModelMapper
 
-    // [보안 패치] CVE-2025-48924 해결을 위한 강제 버전 업그레이드
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
-
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test' // 시큐리티 테스트용
@@ -62,4 +59,12 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// [보안 패치]
+configurations.all {
+    resolutionStrategy {
+        // 다른 라이브러리가 어떤 버전을 요구하든 무시하고, 무조건 아래 지정한 버전으로 고정
+        force 'org.apache.commons:commons-lang3:3.14.0'
+    }
 }
