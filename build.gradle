@@ -49,14 +49,8 @@ dependencies {
     // Utils & Docs
     compileOnly 'org.projectlombok:lombok'                          // Lombok
     annotationProcessor 'org.projectlombok:lombok'                // Lombok
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0' // Swagger(Springdoc)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // Swagger(Springdoc)
     implementation 'org.modelmapper:modelmapper:3.1.1'            // ModelMapper
-
-    // =========================================================
-    // [보안 패치] CVE-2025-48924 해결을 위한 강제 버전 업그레이드
-    // (Spring Boot가 가져오는 3.13.0 버전 대신 이 버전을 사용하도록 강제함)
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
-    // =========================================================
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
