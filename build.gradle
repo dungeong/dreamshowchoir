@@ -62,9 +62,11 @@ tasks.named('test') {
 }
 
 // [보안 패치]
-configurations.all {
+// Gradle 성능 향상을 위해 .all 대신 .configureEach 사용 (Lazy Configuration)
+configurations.configureEach {
     resolutionStrategy {
-        // 다른 라이브러리가 어떤 버전을 요구하든 무시하고, 무조건 아래 지정한 버전으로 고정
+        // 다른 라이브러리가 어떤 버전을 요구하든 무시하고,
+        // 무조건 아래 지정한 버전으로 고정시킵니다.
         force 'org.apache.commons:commons-lang3:3.14.0'
     }
 }
