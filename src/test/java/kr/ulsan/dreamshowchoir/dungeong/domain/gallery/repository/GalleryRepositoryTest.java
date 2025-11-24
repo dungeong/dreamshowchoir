@@ -88,7 +88,7 @@ class GalleryRepositoryTest {
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         // when (실행)
-        Page<Gallery> galleryPage = galleryRepository.findAllByDeletedAtIsNull(pageRequest);
+        Page<Gallery> galleryPage = galleryRepository.findAllWithUser(pageRequest);
 
         // then (검증)
         assertThat(galleryPage.getTotalElements()).isEqualTo(2);

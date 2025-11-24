@@ -68,10 +68,11 @@ public class SecurityConfig {
                         "/swagger-ui.html", // Swagger UI
                         "/api-docs/**"      // Springdoc API 문서
                 ).permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ
+                .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ 읽기
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()     // 문의 생성
-                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()     // 연혁
-                .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()     // 통합 콘텐츠
+                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()     // 연혁 읽기
+                .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()     // 통합 콘텐츠 읽기
+                .requestMatchers(HttpMethod.GET, "/api/gallery/**").permitAll()     // 갤러리 읽기
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")
@@ -82,6 +83,10 @@ public class SecurityConfig {
                         "/api/member/**"    // 멤버 하위
                 ).hasAnyRole("MEMBER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/notices/**").hasAnyRole("MEMBER", "ADMIN")   // 공지사항 읽기
+                .requestMatchers(HttpMethod.POST, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")  // 갤러리 쓰기
+                .requestMatchers(HttpMethod.PATCH, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")     // 갤러리 수정
+                .requestMatchers(HttpMethod.DELETE, "/api/gallery/**").hasAnyRole("MEMBER", "ADMIN")    // 갤러리 삭제
+
 
                 // (인증 필요) /api/auth/me (내 정보 조회)는 '인증'만 되면 허용
                 .requestMatchers(
