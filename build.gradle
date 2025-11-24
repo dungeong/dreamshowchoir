@@ -52,6 +52,9 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0' // Swagger(Springdoc)
     implementation 'org.modelmapper:modelmapper:3.1.1'            // ModelMapper
 
+    // [보안 패치] CVE-2025-48924 해결을 위한 강제 버전 업그레이드
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test' // 시큐리티 테스트용
