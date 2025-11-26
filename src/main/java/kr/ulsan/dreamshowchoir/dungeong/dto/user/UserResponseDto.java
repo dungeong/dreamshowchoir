@@ -25,7 +25,8 @@ public class UserResponseDto {
 
     /**
      * Entity를 DTO로 변환하는 생성자
-     * @param user User 엔티티
+     *
+     * @param user    User 엔티티
      * @param profile MemberProfile 엔티티 (null일 수 있음)
      */
     @Builder

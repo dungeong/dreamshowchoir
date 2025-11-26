@@ -2,10 +2,15 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.user;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -44,6 +49,19 @@ public class User extends BaseTimeEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberProfile memberProfile;
 
+    // ----------- 추가 입력 정보 -----------
+    @Column(name = "PHONE_NUMBER", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "BIRTH_DATE")
+    private LocalDate birthDate; // java.time.LocalDate
+
+    @Column(name = "GENDER", length = 10)
+    private String gender; // "MALE", "FEMALE"
+
+    @Column(name = "TERMS_AGREED", nullable = false)
+    private Boolean termsAgreed;
+
     // 생성자
     @Builder
     public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role) {
@@ -70,6 +88,15 @@ public class User extends BaseTimeEntity {
     // 양방향 관계 편의 메소드
     public void setMemberProfile(MemberProfile memberProfile) {
         this.memberProfile = memberProfile;
+    }
+
+    // [추가] 추가 정보 업데이트 메소드 (Onboarding)
+    public void updateAdditionalInfo(String name, String phoneNumber, LocalDate birthDate, String gender, Boolean termsAgreed) {
+        this.name = name; // 실명으로 덮어쓰기 (OAuth 이름이 닉네임일 수 있으므로)
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.termsAgreed = termsAgreed;
     }
 
 
