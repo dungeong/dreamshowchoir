@@ -3,6 +3,7 @@ package kr.ulsan.dreamshowchoir.dungeong.controller;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.AuthService;
 import kr.ulsan.dreamshowchoir.dungeong.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +51,28 @@ public class UserController {
         // 새로 만든 UserService의 로직을 호출합니다.
         UserResponseDto updatedUser = userService.updateSignUpInfo(userId, requestDto);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    /**
+     * 내 정보 수정 API
+     * (PATCH /api/users/me)
+     */
+    @PatchMapping("/me")
+    public ResponseEntity<UserResponseDto> updateMyInfo(
+            @Valid @RequestBody UserUpdateRequestDto requestDto,
+            @AuthenticationPrincipal Long userId
+    ) {
+        UserResponseDto updatedUser = userService.updateMyInfo(userId, requestDto);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    /**
+     * 회원 탈퇴 API
+     * (DELETE /api/users/me)
+     */
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal Long userId) {
+        userService.withdraw(userId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -90,7 +90,7 @@ public class User extends BaseTimeEntity {
         this.memberProfile = memberProfile;
     }
 
-    // [추가] 추가 정보 업데이트 메소드 (Onboarding)
+    // 추가 정보 업데이트 메소드 (Onboarding)
     public void updateAdditionalInfo(String name, String phoneNumber, LocalDate birthDate, String gender, Boolean termsAgreed) {
         this.name = name; // 실명으로 덮어쓰기 (OAuth 이름이 닉네임일 수 있으므로)
         this.phoneNumber = phoneNumber;
@@ -99,5 +99,11 @@ public class User extends BaseTimeEntity {
         this.termsAgreed = termsAgreed;
     }
 
-
+    // 내 정보 수정
+    public void updateInfo(String name, String phoneNumber, LocalDate birthDate, String gender) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+        this.gender = gender;
+    }
 }

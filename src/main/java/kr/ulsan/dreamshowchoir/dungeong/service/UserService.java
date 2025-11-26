@@ -6,6 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.MemberProfileResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,5 +64,39 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // 추후 회원 탈퇴(withdraw), 내 정보 수정(updateProfile) 등도 여기에 추가하면 됩니다.
+    /**
+     * 내 정보 수정
+     * (이름, 전화번호, 생년월일, 성별)
+     */
+    public UserResponseDto updateMyInfo(Long userId, UserUpdateRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // User 엔티티에 updateInfo 메서드 추가 필요 (아래 참고)
+        user.updateInfo(
+                requestDto.getName(),
+                requestDto.getPhoneNumber(),
+                requestDto.getBirthDate(),
+                requestDto.getGender()
+        );
+
+        return UserResponseDto.builder()
+                .user(user)
+                .profile(user.getMemberProfile())
+                .build();
+    }
+
+    /**
+     * 회원 탈퇴 (논리 삭제)
+     * - DB: Soft Delete
+     * - OAuth: (선택사항) 연동 해제 로직이 필요하면 여기에 추가
+     */
+    public void withdraw(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 탈퇴 시 연관된 MemberProfile 등은 Cascade 설정에 따라 처리됨.
+        // User 엔티티에 @SQLDelete가 적용되어 있으므로 delete() 호출 시 Soft Delete 됨.
+        userRepository.delete(user);
+    }
 }
