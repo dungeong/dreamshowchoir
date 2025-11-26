@@ -1,6 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.dto.post;
 
-import jakarta.validation.constraints.NotBlank; // 1. Validation import
+import jakarta.validation.constraints.NotBlank;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Post;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;

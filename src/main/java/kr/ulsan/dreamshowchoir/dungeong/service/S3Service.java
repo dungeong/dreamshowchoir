@@ -57,6 +57,7 @@ public class S3Service {
 
     /**
      * S3에서 파일 삭제
+     *
      * @param fileUrl 삭제할 파일의 전체 URL 또는 Key
      */
     public void deleteFile(String fileUrl) {

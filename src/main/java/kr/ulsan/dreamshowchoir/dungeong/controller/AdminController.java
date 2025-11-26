@@ -451,6 +451,7 @@ public class AdminController {
     }
 
     // --------------------- 배너 ----------------------
+
     /**
      * (관리자용) 배너 등록 API
      * (POST /api/admin/banners)

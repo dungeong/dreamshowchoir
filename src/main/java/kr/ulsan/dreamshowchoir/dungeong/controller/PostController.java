@@ -1,12 +1,12 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostListResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.PostService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
@@ -60,7 +61,7 @@ public class PostController {
     public ResponseEntity<PageResponseDto<PostListResponseDto>> getPostList(
             // 쿼리 파라미터를 Pageable 객체로 자동 변환
             // (size=10, sort=createdAt, desc를 기본값으로 설정)
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
 
@@ -117,8 +118,8 @@ public class PostController {
      * (DELETE /api/posts/{postId})
      * (작성자 본인 또는 ADMIN 권한 필요)
      *
-     * @param postId  URL 경로에서 추출한 게시글 ID
-     * @param userId  JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
+     * @param postId URL 경로에서 추출한 게시글 ID
+     * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 204 No Content
      */
     @DeleteMapping("/{postId}")

@@ -3,7 +3,9 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.gallery;
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.MediaType;
 import lombok.AccessLevel;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

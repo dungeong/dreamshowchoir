@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Comment;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Post;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.repository.CommentRepository;
@@ -9,7 +10,6 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentResponseDto;
-import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

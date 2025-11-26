@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.MediaType;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.Gallery;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.GalleryMedia;
@@ -12,7 +13,6 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryListResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryUpdateRequestDto;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

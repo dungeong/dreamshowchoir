@@ -54,11 +54,12 @@ public class AuthService {
             user = userRepository.save(user); // DB에 저장
         }
 
-       return user;
+        return user;
     }
 
     /**
      * 현재 로그인 된 사용자의 ID로 상세 정보를 조회
+     *
      * @param userId
      * @return
      */

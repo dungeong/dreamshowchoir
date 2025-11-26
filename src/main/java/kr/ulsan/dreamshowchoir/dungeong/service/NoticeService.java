@@ -1,11 +1,11 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notice.Notice;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notice.repository.NoticeRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeListResponseDto;

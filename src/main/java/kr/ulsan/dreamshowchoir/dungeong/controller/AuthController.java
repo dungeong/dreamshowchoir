@@ -18,6 +18,7 @@ public class AuthController {
 
     /**
      * 현재 로그인된 사용자의 정보를 반환하는 API
+     *
      * @param userId @AuthenticationPrincipal을 통해 Spring Security가 주입해주는 현재 사용자의 ID
      * @return UserResponseDto
      */

@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * 페이징 처리 응답을 위한 범용 DTO
+ *
  * @param <T> 목록에 포함될 DTO의 타입
  */
 @Getter
@@ -21,6 +22,7 @@ public class PageResponseDto<T> {
 
     /**
      * Spring Data의 Page 객체를 받아 PageResponseDto로 변환
+     *
      * @param page Spring Data의 Page 객체
      */
     public PageResponseDto(Page<T> page) {

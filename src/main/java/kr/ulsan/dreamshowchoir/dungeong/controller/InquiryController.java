@@ -1,9 +1,9 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.inquiry.InquiryCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.inquiry.InquiryResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.InquiryService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

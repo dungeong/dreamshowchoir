@@ -1,6 +1,5 @@
 package kr.ulsan.dreamshowchoir.dungeong.config.auth;
 
-import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.ulsan.dreamshowchoir.dungeong.util.CookieUtil;

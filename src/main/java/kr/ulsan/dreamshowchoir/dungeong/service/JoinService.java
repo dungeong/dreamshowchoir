@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notification.Notification;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notification.NotificationType;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notification.repository.NotificationRepository;
@@ -10,11 +11,10 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.JoinApplicationRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.StatusUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
-import jakarta.persistence.EntityNotFoundException;
-import kr.ulsan.dreamshowchoir.dungeong.dto.common.StatusUpdateRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

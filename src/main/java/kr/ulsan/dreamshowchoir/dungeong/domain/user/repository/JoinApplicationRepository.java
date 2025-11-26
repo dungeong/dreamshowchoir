@@ -6,12 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface JoinApplicationRepository extends JpaRepository<JoinApplication, Long> {
     // 특정 유저의 신청 이력 조회
     Optional<JoinApplication> findByUser_UserId(Long userId);
+
     // 특정 상태(예 : PENDING)의 신청 목록 조회 (관리자용)
     Page<JoinApplication> findByStatus(JoinStatus status, Pageable pageable);
 }

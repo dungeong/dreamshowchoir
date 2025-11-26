@@ -1,10 +1,10 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.comment.CommentUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.CommentService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

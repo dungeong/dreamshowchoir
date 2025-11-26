@@ -9,13 +9,13 @@ import java.util.Map;
 
 @Getter
 public class OAuthAttributes {
-    private Map<String, Object> attributes;
-    private String nameAttributeKey;
-    private String name;
-    private String email;
-    private String profileImageKey;
-    private String oauthId;
-    private String provider;
+    private final Map<String, Object> attributes;
+    private final String nameAttributeKey;
+    private final String name;
+    private final String email;
+    private final String profileImageKey;
+    private final String oauthId;
+    private final String provider;
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String profileImageKey, String oauthId, String provider) {
@@ -36,54 +36,10 @@ public class OAuthAttributes {
             return ofNaver(userNameAttributeName, attributes);
         }
 
-        // Kakao
-        if ("kakao".equals(registrationId)) {
-            return ofKakao(userNameAttributeName, attributes);
-        }
-
-        // Facebook
-        if ("facebook".equals(registrationId)) {
-            return ofFacebook(userNameAttributeName, attributes);
-        }
-
-        // 기본값은 Google
-        return ofGoogle(userNameAttributeName, attributes);
+        // Kakao (기본값)
+        return ofKakao(userNameAttributeName, attributes);
     }
 
-    // Google JSON 파싱 메소드
-    private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
-        return OAuthAttributes.builder()
-                .name((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .profileImageKey((String) attributes.get("picture"))
-                .oauthId((String) attributes.get("sub"))
-                .provider("google")
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
-
-    // Facebook JSON 파싱 메소드
-    private static OAuthAttributes ofFacebook(String userNameAttributeName, Map<String, Object> attributes) {
-
-        // Facebook의 'picture'는 중첩 객체(picture.data.url) 안에 있음
-        String profileImageUrl = null;
-        if (attributes.containsKey("picture")) {
-            Map<String, Object> picture = (Map<String, Object>) attributes.get("picture");
-            Map<String, Object> data = (Map<String, Object>) picture.get("data");
-            profileImageUrl = (String) data.get("url");
-        }
-
-        return OAuthAttributes.builder()
-                .name((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .profileImageKey(profileImageUrl) // 파싱한 이미지 URL
-                .oauthId((String) attributes.get("id")) // 페이스북 고유 ID
-                .provider("facebook")
-                .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName)
-                .build();
-    }
 
     // Naver JSON 파싱 메소드
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {

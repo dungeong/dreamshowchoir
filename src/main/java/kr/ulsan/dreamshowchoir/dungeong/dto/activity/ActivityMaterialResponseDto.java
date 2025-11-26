@@ -2,6 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.dto.activity;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.activity.ActivityMaterial;
 import lombok.Getter;
+
 import java.time.LocalDateTime;
 
 @Getter

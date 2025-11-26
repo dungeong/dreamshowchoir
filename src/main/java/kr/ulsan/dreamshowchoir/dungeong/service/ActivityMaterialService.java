@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.activity.ActivityMaterial;
 import kr.ulsan.dreamshowchoir.dungeong.domain.activity.repository.ActivityMaterialRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
@@ -8,7 +9,6 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialCreateReque
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

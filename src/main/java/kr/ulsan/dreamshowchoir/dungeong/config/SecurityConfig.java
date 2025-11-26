@@ -68,14 +68,19 @@ public class SecurityConfig {
                         "/error",
                         "/swagger-ui.html", // Swagger UI
                         "/api-docs/**",      // Springdoc API 문서
-                        "/api/activity-materials/**",   // 활동 자료 조회
-                        "/api/banners"
+                        "/api/activity-materials/**"   // 활동 자료 조회
                 ).permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/faq/**").permitAll()     // FAQ 읽기
+                .requestMatchers(HttpMethod.GET,        // 읽기
+                        "/api/banners",             // 배너
+                        "/api/info/**",             // 단원 소개
+                        "/api/activity-materials/**",   // 활동자료
+                        "/api/gallery/**",          // 갤러리
+                        "/api/notices/**",          // 공지사항
+                        "/api/faq/**",              // FAQ
+                        "/api/history",             // 연혁
+                        "/api/content/**"           // 통합 콘텐츠
+                ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()   // 문의 생성
-                .requestMatchers(HttpMethod.GET, "/api/history").permitAll()    // 연혁 읽기
-                .requestMatchers(HttpMethod.GET, "/api/content/**").permitAll()     // 통합 콘텐츠 읽기
-                .requestMatchers(HttpMethod.GET, "/api/gallery/**").permitAll()     // 갤러리 읽기
 
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")

@@ -21,6 +21,7 @@ public class RecaptchaService {
 
     /**
      * Google reCAPTCHA 서버에 토큰 검증을 요청
+     *
      * @param recaptchaToken 프론트엔드에서 받은 토큰
      * @return 검증 성공 여부 (v3의 경우 점수(score)도 확인)
      */

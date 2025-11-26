@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.Post;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.PostImage;
 import kr.ulsan.dreamshowchoir.dungeong.domain.post.repository.PostImageRepository;
@@ -7,7 +8,6 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.post.repository.PostRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostListResponseDto;
@@ -112,7 +112,7 @@ public class PostService {
     /**
      * 게시글 수정
      *
-     * @param postId 수정할 게시글의 ID
+     * @param postId     수정할 게시글의 ID
      * @param requestDto 수정할 제목, 내용 DTO
      * @param userId     현재 인증된 사용자의 ID (JWT 토큰에서 추출)
      * @return 수정된 게시글의 상세 정보 DTO
@@ -169,8 +169,8 @@ public class PostService {
     /**
      * 게시글 1건을 (논리) 삭제
      *
-     * @param postId  삭제할 게시글의 ID
-     * @param userId  현재 인증된 사용자의 ID (JWT 토큰에서 추출)
+     * @param postId 삭제할 게시글의 ID
+     * @param userId 현재 인증된 사용자의 ID (JWT 토큰에서 추출)
      */
     public void deletePost(Long postId, Long userId) {
 
@@ -193,7 +193,7 @@ public class PostService {
         // Repository의 delete() 호출 -> @SQLDelete(논리삭제) 쿼리 실행
         postRepository.delete(post);
     }
-    
+
     // 공통 이미지 업로드 메소드
     private void uploadImages(List<MultipartFile> files, Post post) {
         if (files != null && !files.isEmpty()) {
