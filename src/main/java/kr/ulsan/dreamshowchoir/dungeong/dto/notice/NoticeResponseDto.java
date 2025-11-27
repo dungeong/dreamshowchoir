@@ -1,9 +1,12 @@
 package kr.ulsan.dreamshowchoir.dungeong.dto.notice;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.notice.Notice;
+import kr.ulsan.dreamshowchoir.dungeong.domain.notice.NoticeImage;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class NoticeResponseDto {
@@ -15,8 +18,7 @@ public class NoticeResponseDto {
     private final Long authorId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
-
-    // (TODO: 나중에 NoticeImage 리스트 추가)
+    private final List<String> imageUrls;
 
     /**
      * Entity를 DTO로 변환하는 생성자
@@ -29,5 +31,10 @@ public class NoticeResponseDto {
         this.authorId = notice.getUser().getUserId();
         this.createdAt = notice.getCreatedAt();
         this.updatedAt = notice.getUpdatedAt();
+
+        // Entity -> URL 리스트 변환
+        this.imageUrls = notice.getNoticeImages().stream()
+                .map(NoticeImage::getImageKey)
+                .collect(Collectors.toList());
     }
 }

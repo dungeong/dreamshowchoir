@@ -5,6 +5,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NoticeUpdateRequestDto {
@@ -14,4 +16,6 @@ public class NoticeUpdateRequestDto {
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content;
+
+    private List<Long> deleteImageIds;
 }

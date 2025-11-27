@@ -295,12 +295,13 @@ public class AdminController {
      */
     @PostMapping("/notices")
     public ResponseEntity<NoticeResponseDto> createNotice(
-            @Valid @RequestBody NoticeCreateRequestDto requestDto,
+            @Valid @RequestPart(value = "dto") NoticeCreateRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Long userId
     ) {
 
         // Service를 호출하여 공지사항 생성
-        NoticeResponseDto createdNotice = noticeService.createNotice(requestDto, userId);
+        NoticeResponseDto createdNotice = noticeService.createNotice(requestDto, files, userId);
 
         // 201 Created 상태 코드와 함께 생성된 공지사항 정보 반환
         return ResponseEntity.status(HttpStatus.CREATED).body(createdNotice);
@@ -319,9 +320,10 @@ public class AdminController {
     public ResponseEntity<NoticeResponseDto> updateNotice(
             @PathVariable Long noticeId,
             @Valid @RequestBody NoticeUpdateRequestDto requestDto,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Long userId
     ) {
-        NoticeResponseDto updatedNotice = noticeService.updateNotice(noticeId, requestDto, userId);
+        NoticeResponseDto updatedNotice = noticeService.updateNotice(noticeId, requestDto, files);
         return ResponseEntity.ok(updatedNotice);
     }
 

@@ -2,6 +2,8 @@ package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notice.Notice;
+import kr.ulsan.dreamshowchoir.dungeong.domain.notice.NoticeImage;
+import kr.ulsan.dreamshowchoir.dungeong.domain.notice.repository.NoticeImageRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notice.repository.NoticeRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
@@ -17,6 +19,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +30,8 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
+    private final NoticeImageRepository noticeImageRepository;
+    private final S3Service s3Service;
 
     /**
      * (공통 메소드) 해당 유저가 ADMIN인지 확인하는 헬퍼 메소드
@@ -47,7 +54,7 @@ public class NoticeService {
      * @param userId     현재 인증된 사용자의 ID (JWT 토큰에서 추출)
      * @return 생성된 공지사항의 상세 정보 DTO
      */
-    public NoticeResponseDto createNotice(NoticeCreateRequestDto requestDto, Long userId) {
+    public NoticeResponseDto createNotice(NoticeCreateRequestDto requestDto, List<MultipartFile> files, Long userId) {
 
         // 작성자(User) 엔티티를 DB에서 조회
         User author = checkAdminAuthority(userId);
@@ -57,6 +64,9 @@ public class NoticeService {
 
         // Repository를 통해 엔티티를 DB에 저장
         Notice savedNotice = noticeRepository.save(newNotice);
+
+        // 이미지 업로드 및 저장
+        uploadImages(files, savedNotice);
 
         // 저장된 엔티티를 Response DTO로 변환하여 컨트롤러에 반환
         return new NoticeResponseDto(savedNotice);
@@ -105,25 +115,38 @@ public class NoticeService {
      *
      * @param noticeId   수정할 공지사항의 ID
      * @param requestDto 수정할 제목, 내용 DTO
-     * @param userId     현재 인증된 사용자의 ID (권한 검사용)
+     * @param files      새로 추가할 이미지 파일 리스트
      * @return 수정된 공지사항의 상세 정보 DTO
      */
-    public NoticeResponseDto updateNotice(Long noticeId, NoticeUpdateRequestDto requestDto, Long userId) {
-
-        // (권한 검사) ADMIN인지 확인
-        // (SecurityConfig에서 1차로 막지만, 서비스 계층에서도 2차 검증)
-        checkAdminAuthority(userId);
+    public NoticeResponseDto updateNotice(Long noticeId, NoticeUpdateRequestDto requestDto, List<MultipartFile> files) {
 
         // 공지사항 조회
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공지사항을 찾을 수 없습니다: " + noticeId));
 
         // 엔티티 내용 변경
-        // (TODO: Notice 엔티티에 update(title, content) 헬퍼 메소드 추가 필요)
         notice.update(requestDto.getTitle(), requestDto.getContent());
+
+        // 기존 이미지 삭제 로직
+        List<Long> deleteImageIds = requestDto.getDeleteImageIds();
+        if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
+            List<NoticeImage> imagesToDelete = noticeImageRepository.findAllById(deleteImageIds);
+
+            for (NoticeImage image : imagesToDelete) {
+                // 해당 공지사항의 이미지가 맞는지 안전장치
+                if (image.getNotice().getNoticeId().equals(noticeId)) {
+                    s3Service.deleteFile(image.getImageKey()); // S3 물리 삭제
+                    noticeImageRepository.delete(image);       // DB 삭제
+                }
+            }
+        }
+
+        // 새 이미지 업로드
+        uploadImages(files, notice);
 
         // updatedAt 갱신을 위해 flush() 호출
         noticeRepository.flush();
+        noticeImageRepository.flush();
 
         // 변경된 엔티티를 DTO로 변환하여 반환
         return new NoticeResponseDto(notice);
@@ -145,9 +168,32 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 공지사항을 찾을 수 없습니다: " + noticeId));
 
+        // 연결된 이미지 S3에서 모두 삭제
+        for (NoticeImage image : notice.getNoticeImages()) {
+            s3Service.deleteFile(image.getImageKey());
+        }
+
         // Repository의 delete() 호출 -> @SQLDelete(논리삭제) 쿼리 실행
         noticeRepository.delete(notice);
     }
 
+    // 이미지 업로드 로직
+    private void uploadImages(List<MultipartFile> files, Notice notice) {
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                // S3 업로드 (폴더명: "notice")
+                String imageKey = s3Service.uploadFile(file, "notice");
+
+                NoticeImage noticeImage = NoticeImage.builder()
+                        .notice(notice)
+                        .imageName(file.getOriginalFilename())
+                        .imageKey(imageKey)
+                        .fileSize(file.getSize())
+                        .build();
+
+                noticeImageRepository.save(noticeImage);
+            }
+        }
+    }
 
 }
