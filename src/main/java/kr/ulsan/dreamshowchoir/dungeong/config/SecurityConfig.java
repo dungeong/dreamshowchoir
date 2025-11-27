@@ -35,6 +35,16 @@ public class SecurityConfig {
         // CSRF(Cross-Site Request Forgery) 보호 비활성화 (JWT 사용 시 불필요)
         http.csrf(AbstractHttpConfigurer::disable);
 
+        // CORS 설정 활성화
+        http.cors(cors -> cors.configurationSource(request -> {
+            var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
+            corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:3000")); // 프론트엔드 주소 허용
+            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+            corsConfiguration.setAllowCredentials(true);
+            return corsConfiguration;
+        }));
+
         // 세션(Session) 관리 정책 설정: 세션을 사용하지 않음 (STATELESS)
         // (JWT 기반 인증이므로 서버가 세션 상태를 저장할 필요 없음)
         http.sessionManagement(session ->
