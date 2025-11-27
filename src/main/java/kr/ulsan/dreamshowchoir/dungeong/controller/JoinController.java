@@ -41,12 +41,12 @@ public class JoinController {
 
     /**
      * 내 가입 신청 상태를 조회하는 API
-     * (GET /api/join)
+     * (GET /api/join/me)
      *
      * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 신청서 상세 정보 (JSON)
      */
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<JoinApplicationResponseDto> getMyApplication(
             @AuthenticationPrincipal Long userId // JWT에서 사용자 ID 추출
     ) {

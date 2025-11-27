@@ -4,9 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.Donation;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.repository.DonationRepository;
-import kr.ulsan.dreamshowchoir.dungeong.domain.notification.Notification;
 import kr.ulsan.dreamshowchoir.dungeong.domain.notification.NotificationType;
-import kr.ulsan.dreamshowchoir.dungeong.domain.notification.repository.NotificationRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
@@ -29,7 +27,7 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
     private final UserRepository userRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     /**
      * 새로운 후원 신청을 생성
@@ -115,15 +113,17 @@ public class DonationService {
 
         User donator = donation.getUser();
         String notificationMessage;
+        NotificationType notificationType;
 
         if (newStatus == DonationStatus.COMPLETED) {
             // 완료
             donation.markAsCompleted();
+            notificationType = NotificationType.DONATION_APPROVED;
             notificationMessage = "신청하신 후원이 정상적으로 완료되었습니다. 감사합니다.";
-
         } else if (newStatus == DonationStatus.FAILED) {
             // 실패
             donation.markAsFailed();
+            notificationType = NotificationType.DONATION_REJECTED;
             notificationMessage = "신청하신 후원 처리에 실패하였습니다. 관리자에게 문의해주세요.";
         } else {
             // PENDING으로 되돌리는 등의 예외 케이스
@@ -131,11 +131,7 @@ public class DonationService {
         }
 
         // 후원자에게 알림 생성 (알림 타입은 임의로 지정)
-        notificationRepository.save(Notification.builder()
-                .user(donator)
-                .type(NotificationType.NEW_NOTICE) // (TODO: '후원 완료' 타입 추가 시 변경)
-                .message(notificationMessage)
-                .build());
+        notificationService.createNotification(donator, notificationType, notificationMessage);
 
         // 변경된 후원 정보 반환
         return new DonationResponseDto(donation);

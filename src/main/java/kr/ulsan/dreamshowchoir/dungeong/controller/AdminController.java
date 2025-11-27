@@ -319,7 +319,7 @@ public class AdminController {
     @PatchMapping("/notices/{noticeId}")
     public ResponseEntity<NoticeResponseDto> updateNotice(
             @PathVariable Long noticeId,
-            @Valid @RequestBody NoticeUpdateRequestDto requestDto,
+            @Valid @RequestPart(value = "dto") NoticeUpdateRequestDto requestDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
             @AuthenticationPrincipal Long userId
     ) {

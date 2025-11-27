@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class PostResponseDto {
@@ -16,12 +17,12 @@ public class PostResponseDto {
     private final Long authorId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
-    private final List<String> imageUrls;
+    private final List<PostImageDto> images;
 
     /**
      * Entity를 DTO로 변환하는 생성자
      */
-    public PostResponseDto(Post post, List<String> imageUrls) {
+    public PostResponseDto(Post post) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
         this.content = post.getContent();
@@ -29,6 +30,8 @@ public class PostResponseDto {
         this.authorId = post.getUser().getUserId();
         this.createdAt = post.getCreatedAt();
         this.updatedAt = post.getUpdatedAt();
-        this.imageUrls = imageUrls;
+        this.images = post.getPostImages().stream()
+                .map(PostImageDto::new)
+                .collect(Collectors.toList());
     }
 }

@@ -49,6 +49,4 @@ public class MemberProfileService {
                 .profile(profile)
                 .build();
     }
-
-    // (TODO: 텍스트 정보 수정 메소드 updateProfileInfo 등 추가)
 }

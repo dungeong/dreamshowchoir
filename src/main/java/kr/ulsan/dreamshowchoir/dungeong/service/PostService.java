@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor // final 필드 생성자 자동 주입
@@ -58,12 +57,8 @@ public class PostService {
 
         postImageRepository.flush();
 
-        List<String> imageUrls = postImageRepository.findAllByPost(savedPost).stream()
-                .map(PostImage::getImageKey)
-                .collect(Collectors.toList());
-
         // 저장된 엔티티를 Response DTO로 변환하여 컨트롤러에 반환
-        return new PostResponseDto(savedPost, imageUrls);
+        return new PostResponseDto(savedPost);
     }
 
     /**
@@ -100,13 +95,8 @@ public class PostService {
         Post post = postRepository.findByIdWithUser(postId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + postId));
 
-        // 이미지 URL 리스트 추출
-        List<String> imageUrls = post.getPostImages().stream()
-                .map(PostImage::getImageKey)
-                .collect(Collectors.toList());
-
         // Post 엔티티를 PostResponseDto(상세 DTO)로 변환하여 반환
-        return new PostResponseDto(post, imageUrls);
+        return new PostResponseDto(post);
     }
 
     /**
@@ -157,12 +147,7 @@ public class PostService {
         postRepository.flush();
         postImageRepository.flush();    // 이미지 삭제/추가
 
-        // 최신 이미지 목록 다시 조회
-        List<String> imageUrls = post.getPostImages().stream()
-                .map(PostImage::getImageKey)
-                .collect(Collectors.toList());
-
-        return new PostResponseDto(post, imageUrls);
+        return new PostResponseDto(post);
     }
 
 

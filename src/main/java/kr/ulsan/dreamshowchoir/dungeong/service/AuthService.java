@@ -50,6 +50,7 @@ public class AuthService {
                     .name(name)
                     .profileImageKey(profileImageKey)
                     .role(Role.USER) // 가입 시 기본 권한은 'USER'(일반 사용자)
+                    .termsAgreed(false)
                     .build();
             user = userRepository.save(user); // DB에 저장
         }
@@ -60,8 +61,8 @@ public class AuthService {
     /**
      * 현재 로그인 된 사용자의 ID로 상세 정보를 조회
      *
-     * @param userId
-     * @return
+     * @param userId    현재 로그인 된 사용자 Id
+     * @return 로그인한 사용자의 상세 정보 DTO
      */
     @Transactional(readOnly = true)
     public UserResponseDto getUserInfo(Long userId) {
@@ -78,6 +79,4 @@ public class AuthService {
                 .profile(profile)
                 .build();
     }
-
-    // (TODO: 여기에 추후 가입 승인(approveMember), 유저 정보 수정 등의 서비스 메소드가 추가될 수 있다.)
 }

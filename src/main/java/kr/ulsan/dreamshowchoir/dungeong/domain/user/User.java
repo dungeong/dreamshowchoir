@@ -64,13 +64,14 @@ public class User extends BaseTimeEntity {
 
     // 생성자
     @Builder
-    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role) {
+    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role, Boolean termsAgreed) {
         this.oauthProvider = oauthProvider;
         this.oauthId = oauthId;
         this.email = email;
         this.name = name;
         this.profileImageKey = profileImageKey;
         this.role = role;
+        this.termsAgreed = termsAgreed;
     }
 
     // OAuth2 로그인 시 기존 회원 정보 업데이트

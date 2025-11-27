@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.util.List;
 
 @Service
@@ -67,6 +68,8 @@ public class NoticeService {
 
         // 이미지 업로드 및 저장
         uploadImages(files, savedNotice);
+
+        noticeImageRepository.flush();
 
         // 저장된 엔티티를 Response DTO로 변환하여 컨트롤러에 반환
         return new NoticeResponseDto(savedNotice);
@@ -134,10 +137,14 @@ public class NoticeService {
 
             for (NoticeImage image : imagesToDelete) {
                 // 해당 공지사항의 이미지가 맞는지 안전장치
-                if (image.getNotice().getNoticeId().equals(noticeId)) {
-                    s3Service.deleteFile(image.getImageKey()); // S3 물리 삭제
-                    noticeImageRepository.delete(image);       // DB 삭제
+                if (!image.getNotice().getNoticeId().equals(noticeId)) {
+                    continue;
                 }
+                // S3 물리 삭제
+                s3Service.deleteFile(image.getImageKey());
+
+                // DB 삭제
+                noticeImageRepository.delete(image);
             }
         }
 
@@ -192,6 +199,8 @@ public class NoticeService {
                         .build();
 
                 noticeImageRepository.save(noticeImage);
+
+                notice.getNoticeImages().add(noticeImage);
             }
         }
     }
