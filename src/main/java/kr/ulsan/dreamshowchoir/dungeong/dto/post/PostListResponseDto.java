@@ -15,7 +15,7 @@ public class PostListResponseDto {
     private final String title;
     private final String authorName;
     private final LocalDateTime createdAt;
-    // private int commentCount; // (TODO: 나중에 댓글 개수 추가)
+    private final int commentCount;
 
     /**
      * Post 엔티티를 PostListResponseDto로 변환
@@ -25,5 +25,6 @@ public class PostListResponseDto {
         this.title = post.getTitle();
         this.authorName = post.getUser().getName(); // N+1 문제 방지를 위해 Fetch Join 필요
         this.createdAt = post.getCreatedAt();
+        this.commentCount = post.getComments() != null ? post.getComments().size() : 0;
     }
 }

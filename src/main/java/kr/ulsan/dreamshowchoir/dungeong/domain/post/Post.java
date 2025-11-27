@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -22,6 +23,7 @@ import java.util.List;
 @SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate
 public class Post extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "POST_ID")
@@ -37,12 +39,13 @@ public class Post extends BaseTimeEntity {
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    // 양방향 관계 설정
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<PostImage> postImages = new ArrayList<>();
+    private List<PostImage> postImages = new ArrayList<>();
 
+    // 댓글 리스트 매핑 + 성능 최적화(@BatchSize)
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Comment> comments = new ArrayList<>();
+    @BatchSize(size = 100) // 목록 조회 시 댓글 개수 셀 때 쿼리 한 번으로 해결
+    private List<Comment> comments = new ArrayList<>();
 
     // 생성자
     @Builder
@@ -55,7 +58,7 @@ public class Post extends BaseTimeEntity {
     public void update(String title, String content) {
         final String SUFFIX = " (수정됨)";
         if (title != null && !title.endsWith(SUFFIX)) {
-            this.title += SUFFIX;
+            this.title = title + SUFFIX;
         } else {
             this.title = title;
         }

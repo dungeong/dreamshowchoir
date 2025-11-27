@@ -18,9 +18,6 @@ public class PostResponseDto {
     private final LocalDateTime updatedAt;
     private final List<String> imageUrls;
 
-    // (TODO: PostImage 리스트 추가)
-    // private List<PostImageDto> images;
-
     /**
      * Entity를 DTO로 변환하는 생성자
      */
