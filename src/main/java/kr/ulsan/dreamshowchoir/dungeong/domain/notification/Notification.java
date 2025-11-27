@@ -2,11 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.notification;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,10 +10,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Entity
 @Table(name = "\"Notification\"")
 @EntityListeners(AuditingEntityListener.class)
-@DynamicUpdate
 public class Notification {
 
     @Id
@@ -29,32 +26,24 @@ public class Notification {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE", nullable = false)
+    @Column(name = "TYPE", nullable = false, length = 50)
     private NotificationType type;
 
     @Column(name = "MESSAGE", nullable = false, columnDefinition = "TEXT")
     private String message;
 
     @Column(name = "IS_READ", nullable = false)
-    private boolean isRead;
+    @Builder.Default
+    private Boolean isRead = false;
 
     @CreatedDate
-    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    @Column(name = "CREATED_AT", updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
-
-    // 생성자
-    @Builder
-    public Notification(User user, NotificationType type, String message) {
-        this.user = user;
-        this.type = type;
-        this.message = message;
-        this.isRead = false; // 6. 생성 시 기본값은 '읽지 않음'
-    }
-
     // 읽음 처리
-    public void read() {
+    public void markAsRead() {
         this.isRead = true;
     }
 }
