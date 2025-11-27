@@ -1,26 +1,25 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.post;
 
 import jakarta.persistence.*;
+import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "\"Comment\"")
-@EntityListeners(AuditingEntityListener.class)
 @SQLDelete(sql = "UPDATE \"Comment\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"COMMENT_ID\" = ?")
 @SQLRestriction("\"DELETED_AT\" IS NULL")
-public class Comment {
+@DynamicUpdate
+public class Comment extends BaseTimeEntity { // [변경] 상속 적용
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "COMMENT_ID")
@@ -37,14 +36,6 @@ public class Comment {
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @CreatedDate
-    @Column(name = "CREATED_AT", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "DELETED_AT")
-    private LocalDateTime deletedAt;
-
-    // 생성자
     @Builder
     public Comment(Post post, User user, String content) {
         this.post = post;
@@ -52,16 +43,8 @@ public class Comment {
         this.content = content;
     }
 
+    // 댓글 내용 수정
     public void update(String content) {
-        final String SUFFIX = " (수정됨)";
-        if (content != null && !content.endsWith(SUFFIX)) {
-            this.content += SUFFIX;
-        } else {
-            this.content = content;
-        }
-    }
-
-    public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+        this.content = content;
     }
 }
