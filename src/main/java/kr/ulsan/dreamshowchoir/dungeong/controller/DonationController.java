@@ -3,6 +3,7 @@ package kr.ulsan.dreamshowchoir.dungeong.controller;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonorResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.DonationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,5 +59,15 @@ public class DonationController {
 
         // 200 OK 상태와 함께 목록 반환
         return ResponseEntity.ok(donationList);
+    }
+
+    /**
+     * 후원자 명단 조회 API
+     * (GET /api/donations/donors)
+     * (전체 공개)
+     */
+    @GetMapping("/donors")
+    public ResponseEntity<List<DonorResponseDto>> getDonors() {
+        return ResponseEntity.ok(donationService.getDonorsHallOfFame());
     }
 }

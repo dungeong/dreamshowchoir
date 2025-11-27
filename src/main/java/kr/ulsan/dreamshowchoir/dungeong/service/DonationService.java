@@ -11,6 +11,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.StatusUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonorResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -135,5 +136,16 @@ public class DonationService {
 
         // 변경된 후원 정보 반환
         return new DonationResponseDto(donation);
+    }
+
+    /**
+     * 후원 완료자 목록 조회
+     * (전체 공개)
+     */
+    @Transactional(readOnly = true)
+    public List<DonorResponseDto> getDonorsHallOfFame() {
+        return donationRepository.findAllCompletedDonations().stream()
+                .map(DonorResponseDto::new)
+                .collect(Collectors.toList());
     }
 }

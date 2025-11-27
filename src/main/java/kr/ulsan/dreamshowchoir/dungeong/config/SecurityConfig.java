@@ -41,20 +41,6 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
-        // Form 로그인 방식 비활성화 (OAuth2 로그인을 사용할 것임)
-        http.formLogin(AbstractHttpConfigurer::disable);
-
-        // HTTP Basic 인증 방식 비활성화
-        http.httpBasic(AbstractHttpConfigurer::disable);
-
-        // (TODO: 나중에 CORS 설정은 Next.js와 연동 시 필요)
-        // http.cors(cors -> cors.configurationSource(...));
-
-        // 비로그인 예외 처리
-        http.exceptionHandling(exception -> exception
-                // 인증 진입점을 CustomAuthenticationEntryPoint로 지정
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
-        );
 
 
         // --------------- API 엔드포인트별 접근 권한 설정
@@ -78,7 +64,8 @@ public class SecurityConfig {
                         "/api/notices/**",          // 공지사항
                         "/api/faq/**",              // FAQ
                         "/api/history",             // 연혁
-                        "/api/content/**"           // 통합 콘텐츠
+                        "/api/content/**",           // 통합 콘텐츠
+                        "/api/donations/donors"
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()   // 문의 생성
 
