@@ -4,11 +4,13 @@ import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.MediaType;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.Gallery;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.GalleryMedia;
+import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.GalleryType;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.repository.GalleryMediaRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.repository.GalleryRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryListResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryResponseDto;
@@ -54,15 +56,25 @@ public class GalleryService {
 
     // ================== (조회) ==================
     @Transactional(readOnly = true)
-    public Page<GalleryListResponseDto> getGalleryList(Pageable pageable) {
-        // 목록 조회용 DTO는 미디어 정보 없이 간단하게 반환
-        Page<Gallery> galleryPage = galleryRepository.findAllWithUser(pageable);
-        return galleryPage.map(GalleryListResponseDto::new);
+    public PageResponseDto<GalleryListResponseDto> getGalleryList(GalleryType type, Pageable pageable) {
+        Page<Gallery> galleryPage;
+
+        if (type == null) {
+            // 타입이 없으면 -> 전체 조회 메서드 호출
+            galleryPage = galleryRepository.findAll(pageable);
+        } else {
+            // 타입이 있으면 -> 타입별 조회 메서드 호출
+            galleryPage = galleryRepository.findByType(type.name(), pageable);
+        }
+
+        Page<GalleryListResponseDto> dtoPage = galleryPage.map(GalleryListResponseDto::new);
+        return new PageResponseDto<>(dtoPage);
     }
 
+    // 상세조회
     @Transactional(readOnly = true)
     public GalleryResponseDto getGalleryDetail(Long galleryId) {
-        Gallery gallery = galleryRepository.findByIdWithUser(galleryId)
+        Gallery gallery = galleryRepository.findByIdWithUserAndMedia(galleryId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 갤러리를 찾을 수 없습니다: " + galleryId));
 
         // 미디어 목록 함께 조회
@@ -72,7 +84,7 @@ public class GalleryService {
 
     // ================== (수정) ==================
     public GalleryResponseDto updateGallery(Long galleryId, GalleryUpdateRequestDto requestDto, List<MultipartFile> files, Long userId) {
-        Gallery gallery = galleryRepository.findByIdWithUser(galleryId)
+        Gallery gallery = galleryRepository.findByIdWithUserAndMedia(galleryId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 갤러리를 찾을 수 없습니다: " + galleryId));
 
         // 권한 검사
@@ -107,7 +119,7 @@ public class GalleryService {
 
     // ================== 삭제 ==================
     public void deleteGallery(Long galleryId, Long userId) {
-        Gallery gallery = galleryRepository.findByIdWithUser(galleryId)
+        Gallery gallery = galleryRepository.findByIdWithUserAndMedia(galleryId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID의 갤러리를 찾을 수 없습니다: " + galleryId));
 
         // 권한 검사

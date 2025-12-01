@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -43,6 +44,7 @@ public class Gallery extends BaseTimeEntity {
 
     // 양방향 관계 설정
     @OneToMany(mappedBy = "gallery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 100)
     private final List<GalleryMedia> galleryMedia = new ArrayList<>();
 
     // 생성자
