@@ -21,6 +21,8 @@ public class InquiryService {
 
     private final InquiryRepository inquiryRepository;
     private final RecaptchaService recaptchaService;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
     /**
      * 문의 생성 (비로그인 사용자)
@@ -87,8 +89,33 @@ public class InquiryService {
         // 엔티티 헬퍼 메소드로 답변 추가 (Status -> ANSWERED, answeredAt 갱신)
         inquiry.addAnswer(requestDto.getAnswer());
 
-        // (TODO: 작성자에게 이메일 알림 전송 로직 추가)
+        // 이메일 발송
+        String emailSubject = "[드림쇼콰이어] 문의하신 내용에 대한 답변이 등록되었습니다.";
+        String emailContent = createEmailContent(inquiry.getName(), inquiry.getContent(), requestDto.getAnswer());
+
+        emailService.sendEmail(inquiry.getEmail(), emailSubject, emailContent);
 
         return new InquiryResponseDto(inquiry);
+    }
+
+    // 이메일 본문 생성 헬퍼 (HTML)
+    private String createEmailContent(String name, String question, String answer) {
+        return "<div style='margin:20px;'>" +
+                "<h2>안녕하세요, 드림쇼콰이어입니다.</h2>" +
+                "<p><strong>" + name + "</strong>님께서 문의하신 내용에 대한 답변입니다.</p>" +
+                "<br>" +
+                "<div style='background-color:#f5f5f5; padding:15px; border-radius:5px;'>" +
+                "<h4>Q. 문의 내용</h4>" +
+                "<p>" + question.replace("\n", "<br>") + "</p>" +
+                "</div>" +
+                "<br>" +
+                "<div style='border-left: 4px solid #4CAF50; padding-left: 15px;'>" +
+                "<h4>A. 답변 내용</h4>" +
+                "<p>" + answer.replace("\n", "<br>") + "</p>" +
+                "</div>" +
+                "<br>" +
+                "<p>더 궁금한 점이 있으시면 언제든 문의해주세요.</p>" +
+                "<p>감사합니다.</p>" +
+                "</div>";
     }
 }
