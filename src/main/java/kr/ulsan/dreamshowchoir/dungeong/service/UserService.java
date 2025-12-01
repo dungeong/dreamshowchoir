@@ -3,16 +3,17 @@ package kr.ulsan.dreamshowchoir.dungeong.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
+import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.MemberProfileResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,11 +58,16 @@ public class UserService {
      * @return 단원 프로필 DTO 리스트
      */
     @Transactional(readOnly = true)
-    public List<MemberProfileResponseDto> getPublicMembers() {
-        return userRepository.findAllPublicMembers().stream()
-                // User 객체에서 MemberProfile을 꺼내서 DTO 생성자에 전달
-                .map(user -> new MemberProfileResponseDto(user.getMemberProfile()))
-                .collect(Collectors.toList());
+    public PageResponseDto<MemberProfileResponseDto> getPublicMembers(String part, Pageable pageable) {
+
+        // Repository 호출 (part가 없으면 전체 조회)
+        Page<User> userPage = userRepository.findPublicMembers(part, pageable);
+
+        // Entity -> DTO 변환
+        Page<MemberProfileResponseDto> dtoPage = userPage.map(user -> new MemberProfileResponseDto(user.getMemberProfile()));
+
+        // 공통 페이징 DTO로 반환
+        return new PageResponseDto<>(dtoPage);
     }
 
     /**
