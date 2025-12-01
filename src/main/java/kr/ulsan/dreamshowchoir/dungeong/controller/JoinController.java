@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
@@ -10,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Join (가입 신청)", description = "단원 가입 신청 관련 API")
 @RestController
 @RequestMapping("/api/join")
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class JoinController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 신청서의 상세 정보 (JSON)
      */
+    @Operation(summary = "단원 가입 신청", description = "새로운 단원 가입 신청서를 제출합니다.")
     @PostMapping
     public ResponseEntity<JoinApplicationResponseDto> createJoinApplication(
             @Valid @RequestBody JoinApplicationRequestDto requestDto, // JSON Body와 Validation
@@ -46,6 +50,7 @@ public class JoinController {
      * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 신청서 상세 정보 (JSON)
      */
+    @Operation(summary = "내 가입 신청 상태 조회", description = "현재 로그인한 사용자의 가입 신청 상태를 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<JoinApplicationResponseDto> getMyApplication(
             @AuthenticationPrincipal Long userId // JWT에서 사용자 ID 추출

@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.sheet.SheetResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.SheetService;
@@ -14,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Sheet (악보/자료)", description = "단원 전용 악보/자료실 관련 API")
 @RestController
 @RequestMapping("/api/sheets") // 악보 API의 공통 주소
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class SheetController {
      * @param pageable 쿼리 파라미터 (page, size, sort)
      * @return 페이징된 악보 목록 (JSON)
      */
+    @Operation(summary = "악보/자료 목록 조회", description = "악보/자료 목록을 페이징하여 조회합니다.")
     @GetMapping
     public ResponseEntity<PageResponseDto<SheetResponseDto>> getSheetList(
             // 쿼리 파라미터를 Pageable 객체로 자동 변환
@@ -52,6 +56,7 @@ public class SheetController {
      * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 악보의 상세 정보 (JSON)
      */
+    @Operation(summary = "악보/자료 업로드", description = "새로운 악보나 자료 파일을 업로드합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SheetResponseDto> uploadSheet(
             @RequestPart(value = "file") MultipartFile file, // 단일 파일 업로드
@@ -74,6 +79,7 @@ public class SheetController {
      * @param userId  JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 204 No Content
      */
+    @Operation(summary = "악보/자료 삭제", description = "자신이 업로드한 악보나 자료를 삭제합니다.")
     @DeleteMapping("/{sheetId}")
     public ResponseEntity<Void> deleteSheet(
             @PathVariable Long sheetId, // URL 경로의 {sheetId} 값을 주입

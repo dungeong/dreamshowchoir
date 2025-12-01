@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "User (사용자)", description = "사용자 정보 관련 API")
 @RestController
 @RequestMapping("/api/users") // 공통 경로
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class UserController {
      * @param userId JWT 토큰에서 추출한 사용자 ID
      * @return 내 상세 정보 (UserResponseDto)
      */
+    @Operation(summary = "내 정보 조회", description = "현재 로그인한 사용자의 상세 정보를 조회합니다.")
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyInfo(@AuthenticationPrincipal Long userId) {
         // 기존 AuthService에 만들어두신 getUserInfo() 메소드를 그대로 재사용합니다.
@@ -43,6 +47,7 @@ public class UserController {
      * @param userId     JWT 토큰에서 추출한 사용자 ID
      * @return 업데이트된 내 정보
      */
+    @Operation(summary = "회원가입 추가 정보 입력", description = "OAuth 로그인 후 필요한 추가 정보를 입력하여 회원가입을 완료합니다.")
     @PatchMapping("/sign-up")
     public ResponseEntity<UserResponseDto> signUp(
             @Valid @RequestBody UserSignUpRequestDto requestDto,
@@ -57,6 +62,7 @@ public class UserController {
      * 내 정보 수정 API
      * (PATCH /api/users/me)
      */
+    @Operation(summary = "내 정보 수정", description = "로그인한 사용자의 정보를 수정합니다.")
     @PatchMapping("/me")
     public ResponseEntity<UserResponseDto> updateMyInfo(
             @Valid @RequestBody UserUpdateRequestDto requestDto,
@@ -70,6 +76,7 @@ public class UserController {
      * 회원 탈퇴 API
      * (DELETE /api/users/me)
      */
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자가 서비스를 탈퇴합니다.")
     @DeleteMapping("/me")
     public ResponseEntity<Void> withdraw(@AuthenticationPrincipal Long userId) {
         userService.withdraw(userId);

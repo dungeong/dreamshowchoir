@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialCreateRequestDto;
@@ -42,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(name = "Admin (관리자)", description = "관리자 전용 API")
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -67,6 +70,7 @@ public class AdminController {
      * @param pageable 쿼리 파라미터 (page, size, sort)
      * @return 페이징된 신청서 목록 (JSON)
      */
+    @Operation(summary = "가입 신청 목록 조회", description = "'대기 중'인 가입 신청 목록을 조회합니다.")
     @GetMapping("/join-applications")
     public ResponseEntity<PageResponseDto<JoinApplicationResponseDto>> getPendingApplications(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC)
@@ -85,6 +89,7 @@ public class AdminController {
      * @param requestDto { "status": "APPROVED" } 또는 { "status": "REJECTED" }
      * @return 변경된 신청서 상세 정보 (JSON)
      */
+    @Operation(summary = "가입 신청 상태 변경 (승인/거절)", description = "가입 신청을 '승인' 또는 '거절' 처리합니다.")
     @PatchMapping("/join-applications/{joinId}")
     public ResponseEntity<JoinApplicationResponseDto> updateJoinApplicationStatus(
             @PathVariable Long joinId,
@@ -104,6 +109,7 @@ public class AdminController {
      * @param pageable 쿼리 파라미터 (page, size, sort)
      * @return 페이징된 후원 목록 (JSON)
      */
+    @Operation(summary = "상태별 후원 목록 조회", description = "특정 상태(PENDING, COMPLETED, FAILED)의 후원 목록을 조회합니다.")
     @GetMapping("/donations")
     public ResponseEntity<PageResponseDto<DonationResponseDto>> getDonationsByStatus(
             // 쿼리 파라미터로 status를 받음 (기본값 PENDING)
@@ -124,6 +130,7 @@ public class AdminController {
      * @param requestDto { "status": "COMPLETED" } 또는 { "status": "FAILED" }
      * @return 변경된 후원 신청 상세 정보 (JSON)
      */
+    @Operation(summary = "후원 신청 상태 변경 (완료/실패)", description = "후원 신청 상태를 '완료' 또는 '실패'로 변경합니다.")
     @PatchMapping("/donations/{donationId}")
     public ResponseEntity<DonationResponseDto> updateDonationStatus(
             @PathVariable Long donationId,
@@ -140,6 +147,7 @@ public class AdminController {
      * (GET /api/admin/inquiry?status=PENDING)
      * (ADMIN 권한 필요)
      */
+    @Operation(summary = "상태별 문의 목록 조회", description = "특정 상태(PENDING, REPLIED)의 문의 목록을 조회합니다.")
     @GetMapping("/inquiry")
     public ResponseEntity<PageResponseDto<InquiryResponseDto>> getInquiriesByStatus(
             // 쿼리 파라미터로 status를 받음 (기본값 PENDING)
@@ -156,6 +164,7 @@ public class AdminController {
      * (PATCH /api/admin/inquiry/{inquiryId})
      * (ADMIN 권한 필요)
      */
+    @Operation(summary = "문의 답변 등록", description = "특정 문의에 답변을 등록합니다.")
     @PatchMapping("/inquiry/{inquiryId}")
     public ResponseEntity<InquiryResponseDto> replyToInquiry(
             @PathVariable Long inquiryId,
@@ -171,6 +180,7 @@ public class AdminController {
      * (관리자용) 통합 콘텐츠 생성 API
      * (POST /api/admin/content)
      */
+    @Operation(summary = "통합 콘텐츠 생성", description = "새로운 통합 콘텐츠(사이트 소개, 모집 안내 등)를 생성합니다.")
     @PostMapping("/content")
     public ResponseEntity<SiteContentResponseDto> createSiteContent(
             @Valid @RequestBody SiteContentCreateRequestDto requestDto
@@ -184,6 +194,7 @@ public class AdminController {
      * (PATCH /api/admin/content/{contentKey})
      * (예 : /api/admin/content/RECRUIT_GUIDE)
      */
+    @Operation(summary = "통합 콘텐츠 수정", description = "기존 통합 콘텐츠의 내용을 수정합니다.")
     @PatchMapping("/content/{contentKey}")
     public ResponseEntity<SiteContentResponseDto> updateSiteContent(
             @PathVariable String contentKey,
@@ -197,6 +208,7 @@ public class AdminController {
      * (관리자용) 통합 콘텐츠 삭제 API
      * (DELETE /api/admin/content/{contentKey})
      */
+    @Operation(summary = "통합 콘텐츠 삭제", description = "통합 콘텐츠를 삭제합니다.")
     @DeleteMapping("/content/{contentKey}")
     public ResponseEntity<Void> deleteSiteContent(
             @PathVariable String contentKey
@@ -211,6 +223,7 @@ public class AdminController {
      * (관리자용) 연혁 생성 API
      * (POST /api/admin/history)
      */
+    @Operation(summary = "연혁 생성", description = "새로운 연혁 항목을 추가합니다.")
     @PostMapping("/history")
     public ResponseEntity<HistoryResponseDto> createHistory(
             @Valid @RequestBody HistoryCreateRequestDto requestDto
@@ -223,6 +236,7 @@ public class AdminController {
      * (관리자용) 연혁 수정 API
      * (PATCH /api/admin/history/{historyId})
      */
+    @Operation(summary = "연혁 수정", description = "기존 연혁 항목을 수정합니다.")
     @PatchMapping("/history/{historyId}")
     public ResponseEntity<HistoryResponseDto> updateHistory(
             @PathVariable Long historyId,
@@ -236,6 +250,7 @@ public class AdminController {
      * (관리자용) 연혁 삭제 API
      * (DELETE /api/admin/history/{historyId})
      */
+    @Operation(summary = "연혁 삭제", description = "연혁 항목을 삭제합니다.")
     @DeleteMapping("/history/{historyId}")
     public ResponseEntity<Void> deleteHistory(
             @PathVariable Long historyId
@@ -250,6 +265,7 @@ public class AdminController {
      * (관리자용) FAQ 생성 API
      * (POST /api/admin/faq)
      */
+    @Operation(summary = "FAQ 생성", description = "새로운 FAQ를 생성합니다.")
     @PostMapping("/faq")
     public ResponseEntity<FaqResponseDto> createFaq(
             @Valid @RequestBody FaqCreateRequestDto requestDto
@@ -262,6 +278,7 @@ public class AdminController {
      * (관리자용) FAQ 수정 API
      * (PATCH /api/admin/faq/{faqId})
      */
+    @Operation(summary = "FAQ 수정", description = "기존 FAQ를 수정합니다.")
     @PatchMapping("/faq/{faqId}")
     public ResponseEntity<FaqResponseDto> updateFaq(
             @PathVariable Long faqId,
@@ -275,6 +292,7 @@ public class AdminController {
      * (관리자용) FAQ 삭제 API
      * (DELETE /api/admin/faq/{faqId})
      */
+    @Operation(summary = "FAQ 삭제", description = "FAQ를 삭제합니다.")
     @DeleteMapping("/faq/{faqId}")
     public ResponseEntity<Void> deleteFaq(
             @PathVariable Long faqId
@@ -293,6 +311,7 @@ public class AdminController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 공지사항의 상세 정보 (JSON)
      */
+    @Operation(summary = "공지사항 생성", description = "새로운 공지사항을 생성합니다. 파일 첨부가 가능합니다.")
     @PostMapping("/notices")
     public ResponseEntity<NoticeResponseDto> createNotice(
             @Valid @RequestPart(value = "dto") NoticeCreateRequestDto requestDto,
@@ -316,6 +335,7 @@ public class AdminController {
      * @param userId     현재 로그인한 사용자 ID (Service에서 권한 검사용)
      * @return 수정된 공지사항 상세 정보 (JSON)
      */
+    @Operation(summary = "공지사항 수정", description = "기존 공지사항을 수정합니다. 파일 첨부/변경이 가능합니다.")
     @PatchMapping("/notices/{noticeId}")
     public ResponseEntity<NoticeResponseDto> updateNotice(
             @PathVariable Long noticeId,
@@ -335,6 +355,7 @@ public class AdminController {
      * @param userId   현재 로그인한 사용자 ID (Service에서 권한 검사용)
      * @return 204 No Content
      */
+    @Operation(summary = "공지사항 삭제", description = "공지사항을 삭제합니다.")
     @DeleteMapping("/notices/{noticeId}")
     public ResponseEntity<Void> deleteNotice(
             @PathVariable Long noticeId,
@@ -350,7 +371,8 @@ public class AdminController {
      * (관리자용) 갤러리 게시글 생성 (이미지/비디오 첨부 가능)
      * (POST /api/admin/gallery)
      */
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "갤러리 게시글 생성", description = "새로운 갤러리 게시글을 생성합니다. 이미지/비디오 첨부가 가능합니다.")
+    @PostMapping(value = "/gallery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<GalleryResponseDto> createGallery(
             @Valid @RequestPart(value = "dto") GalleryCreateRequestDto requestDto,
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
@@ -364,7 +386,8 @@ public class AdminController {
      * (관리자용) 갤러리 게시글 수정 (미디어 추가/삭제 포함)
      * (PATCH /api/admin/gallery)
      */
-    @PatchMapping(value = "/{galleryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "갤러리 게시글 수정", description = "기존 갤러리 게시글을 수정합니다. 미디어 추가/삭제가 가능합니다.")
+    @PatchMapping(value = "/gallery/{galleryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<GalleryResponseDto> updateGallery(
             @PathVariable Long galleryId,
             @Valid @RequestPart(value = "dto") GalleryUpdateRequestDto requestDto,
@@ -379,7 +402,8 @@ public class AdminController {
      * (관리자용) 갤러리 게시글 삭제 (논리 삭제)
      * (DELETE /api/admin/gallery)
      */
-    @DeleteMapping("/{galleryId}")
+    @Operation(summary = "갤러리 게시글 삭제", description = "갤러리 게시글을 논리적으로 삭제합니다.")
+    @DeleteMapping("/gallery/{galleryId}")
     public ResponseEntity<Void> deleteGallery(
             @PathVariable Long galleryId,
             @AuthenticationPrincipal Long userId
@@ -400,6 +424,7 @@ public class AdminController {
      * @param userId     JWT 토큰에서 추출한 관리자 ID
      * @return 생성된 활동자료 상세 정보 (JSON)
      */
+    @Operation(summary = "활동자료 등록", description = "새로운 활동자료를 등록합니다. 파일 첨부가 필수입니다.")
     @PostMapping(value = "/activity-materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ActivityMaterialResponseDto> createMaterial(
             @Valid @RequestPart(value = "dto") ActivityMaterialCreateRequestDto requestDto,
@@ -422,6 +447,7 @@ public class AdminController {
      * @param requestDto 수정할 제목, 내용 DTO (JSON)
      * @return 수정된 활동자료 상세 정보 (JSON)
      */
+    @Operation(summary = "활동자료 수정", description = "활동자료의 제목, 내용 등 텍스트 정보만 수정합니다. 파일 자체는 변경할 수 없습니다.")
     @PatchMapping("/activity-materials/{materialId}")
     public ResponseEntity<ActivityMaterialResponseDto> updateMaterial(
             @PathVariable Long materialId,
@@ -442,6 +468,7 @@ public class AdminController {
      * @param materialId URL 경로에서 추출한 자료 ID
      * @return 204 No Content
      */
+    @Operation(summary = "활동자료 삭제", description = "활동자료를 삭제합니다.")
     @DeleteMapping("/activity-materials/{materialId}")
     public ResponseEntity<Void> deleteMaterial(@PathVariable Long materialId) {
 
@@ -463,6 +490,7 @@ public class AdminController {
      * @param file        배너 이미지 파일
      * @return 생성된 배너 정보 (JSON)
      */
+    @Operation(summary = "배너 등록", description = "새로운 배너를 등록합니다.")
     @PostMapping(value = "/banners", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BannerResponseDto> createBanner(
             @RequestPart(value = "title") String title,
@@ -482,6 +510,7 @@ public class AdminController {
      * @param file       교체할 파일 (선택 사항)
      * @return 수정된 배너 정보
      */
+    @Operation(summary = "배너 수정", description = "배너 정보, 순서, 활성 여부, 이미지를 수정합니다.")
     @PatchMapping(value = "/banners/{bannerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BannerResponseDto> updateBanner(
             @PathVariable Long bannerId,
@@ -499,6 +528,7 @@ public class AdminController {
      * @param bannerId 삭제할 배너 ID
      * @return 204 No Content
      */
+    @Operation(summary = "배너 삭제", description = "배너를 삭제합니다.")
     @DeleteMapping("/banners/{bannerId}")
     public ResponseEntity<Void> deleteBanner(@PathVariable Long bannerId) {
         bannerService.deleteBanner(bannerId);

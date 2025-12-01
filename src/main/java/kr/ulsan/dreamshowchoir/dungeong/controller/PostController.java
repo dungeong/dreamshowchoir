@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.post.PostCreateRequestDto;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(name = "Post (단원 게시판)", description = "단원 전용 게시판 관련 API")
 @RestController
 @RequestMapping("/api/posts") // 게시글 API의 공통 주소
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class PostController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 게시글의 상세 정보 (JSON)
      */
+    @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다. 파일 첨부가 가능합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponseDto> createPost(
             @Valid @RequestPart(value = "dto") PostCreateRequestDto requestDto, // JSON Body와 Validation
@@ -57,6 +61,7 @@ public class PostController {
      * @param pageable 쿼리 파라미터 (page, size, sort)
      * @return 페이징된 게시글 목록 (JSON)
      */
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 페이징하여 조회합니다.")
     @GetMapping
     public ResponseEntity<PageResponseDto<PostListResponseDto>> getPostList(
             // 쿼리 파라미터를 Pageable 객체로 자동 변환
@@ -79,6 +84,7 @@ public class PostController {
      * @param postId URL 경로에서 추출한 게시글 ID
      * @return 게시글 상세 정보 (JSON)
      */
+    @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> getPostDetail(
             @PathVariable Long postId // URL 경로의 {postId} 값을 Long postId 변수에 주입
@@ -99,6 +105,7 @@ public class PostController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 수정된 게시글의 상세 정보 (JSON)
      */
+    @Operation(summary = "게시글 수정", description = "자신이 작성한 게시글을 수정합니다. 파일 첨부/변경이 가능합니다.")
     @PatchMapping("/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(
             @PathVariable Long postId,
@@ -122,6 +129,7 @@ public class PostController {
      * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 204 No Content
      */
+    @Operation(summary = "게시글 삭제", description = "자신이 작성한 게시글을 삭제합니다.")
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId,

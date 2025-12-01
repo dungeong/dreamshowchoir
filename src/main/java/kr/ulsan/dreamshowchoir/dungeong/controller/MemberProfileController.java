@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.MemberProfileService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = "Member Profile (단원 프로필)", description = "단원 프로필 관련 API")
 @RestController
 @RequestMapping("/api/member/profile")
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class MemberProfileController {
      * @param userId 로그인한 사용자 ID
      * @param file   업로드할 파일 (Key: "file")
      */
+    @Operation(summary = "프로필 이미지 수정", description = "로그인한 단원의 프로필 이미지를 수정(업로드)합니다.")
     @PatchMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // Multipart 요청 처리
     public ResponseEntity<UserResponseDto> updateProfileImage(
             @AuthenticationPrincipal Long userId,

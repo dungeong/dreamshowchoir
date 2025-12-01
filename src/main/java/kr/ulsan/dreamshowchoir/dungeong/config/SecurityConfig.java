@@ -39,7 +39,7 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(request -> {
             var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
             corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:3000")); // 프론트엔드 주소 허용
-            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PATCH", "DELETE", "OPTIONS"));
             corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
             corsConfiguration.setAllowCredentials(true);
             return corsConfiguration;
@@ -63,7 +63,9 @@ public class SecurityConfig {
                         "/login/**",
                         "/error",
                         "/swagger-ui.html", // Swagger UI
-                        "/api-docs/**",      // Springdoc API 문서
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",  // Springdoc API 문서
+                        "/api-docs/**",
                         "/api/activity-materials/**"   // 활동 자료 조회
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET,        // 읽기

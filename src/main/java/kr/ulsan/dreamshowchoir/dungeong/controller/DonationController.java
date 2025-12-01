@@ -1,5 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Donation (후원)", description = "후원 관련 API")
 @RestController
 @RequestMapping("/api/donations")
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class DonationController {
      * @param userId     JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 생성된 후원 신청의 상세 정보 (JSON)
      */
+    @Operation(summary = "후원 신청", description = "새로운 후원을 신청합니다.")
     @PostMapping
     public ResponseEntity<DonationResponseDto> createDonation(
             @Valid @RequestBody DonationRequestDto requestDto,
@@ -49,6 +53,7 @@ public class DonationController {
      * @param userId JWT 토큰에서 추출한 현재 로그인한 사용자의 ID
      * @return 후원 내역 목록 (JSON Array)
      */
+    @Operation(summary = "내 후원 내역 조회", description = "현재 로그인한 사용자의 모든 후원 내역을 조회합니다.")
     @GetMapping("/my")
     public ResponseEntity<List<DonationResponseDto>> getMyDonations(
             @AuthenticationPrincipal Long userId // JWT에서 사용자 ID 추출
@@ -66,6 +71,7 @@ public class DonationController {
      * (GET /api/donations/donors)
      * (전체 공개)
      */
+    @Operation(summary = "후원자 명단 조회", description = "후원자 명단(명예의 전당)을 조회합니다.")
     @GetMapping("/donors")
     public ResponseEntity<List<DonorResponseDto>> getDonors() {
         return ResponseEntity.ok(donationService.getDonorsHallOfFame());
