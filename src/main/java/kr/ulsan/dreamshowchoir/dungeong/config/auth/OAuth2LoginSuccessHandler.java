@@ -6,6 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
     private final AuthService authService;
 
-    // (TODO: 나중에 application.properties에서 프론트엔드 주소를 주입받도록 수정)
+
     // 프론트엔드의 OAuth 콜백 주소
-    private final String FRONTEND_REDIRECT_URL = "http://localhost:3000/auth/callback";
+    @Value("${frontend.redirect-url}")
+    private String FRONTEND_REDIRECT_URL;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {

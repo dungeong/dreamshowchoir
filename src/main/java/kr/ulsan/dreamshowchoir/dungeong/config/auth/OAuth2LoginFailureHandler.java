@@ -1,32 +1,41 @@
 package kr.ulsan.dreamshowchoir.dungeong.config.auth;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 
 @Slf4j
 @Component
 public class OAuth2LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-    // (TODO: 나중에 application.properties에서 프론트엔드 주소를 주입받도록 수정)
-    private final String FRONTEND_ERROR_URL = "http://localhost:3000/auth/error"; // 프론트엔드의 에러 페이지
+    @Value("${frontend.error-url}")
+    private String frontendErrorUrl;
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException{
 
         log.warn("OAuth2 로그인 실패: {}", exception.getMessage());
 
-        // 에러 메시지를 쿼리 파라미터에 담아 프론트엔드 에러 페이지로 리디렉션
-        String targetUrl = UriComponentsBuilder.fromUriString(FRONTEND_ERROR_URL)
-                .queryParam("error", exception.getLocalizedMessage())
-                .build().toUriString();
+        // 설정 파일에서 불러온 URL 문자열을 URI 객체로 파싱
+        URI baseUri = URI.create(this.frontendErrorUrl);
+
+        // UriComponentsBuilder.newInstance()를 사용하여 명시적으로 조립
+        String targetUrl = UriComponentsBuilder.newInstance()
+                .scheme(baseUri.getScheme()) // 예: http
+                .host(baseUri.getHost())     // 예: localhost
+                .port(baseUri.getPort())     // 예: 3000
+                .path(baseUri.getPath())     // 예: /auth/error
+                .queryParam("error", exception.getLocalizedMessage()) // 에러 메시지 파라미터 추가
+                .build()
+                .toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
