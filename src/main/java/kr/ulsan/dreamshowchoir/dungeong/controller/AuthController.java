@@ -1,6 +1,10 @@
 package kr.ulsan.dreamshowchoir.dungeong.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
@@ -45,6 +49,12 @@ public class AuthController {
     /**
      * Access Token 갱신 API
      */
+    @Operation(summary = "Access Token 갱신", description = "HttpOnly 쿠키에 저장된 Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 갱신 성공", content = @Content(schema = @Schema(implementation = JwtTokenDto.class))),
+            @ApiResponse(responseCode = "401", description = "Refresh Token이 없거나 유효하지 않음 (만료 포함)", content = @Content),
+            @ApiResponse(responseCode = "404", description = "해당 Refresh Token을 가진 유저를 찾을 수 없음", content = @Content)
+    })
     @PostMapping("/refresh")
     public ResponseEntity<JwtTokenDto> refreshAccessToken(
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
@@ -60,6 +70,10 @@ public class AuthController {
     /**
      * 로그아웃 API
      */
+    @Operation(summary = "로그아웃", description = "서버 데이터베이스에서 Refresh Token을 삭제하고, 클라이언트의 Refresh Token 쿠키를 만료시킵니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "로그아웃 성공 (내용 없음)", content = @Content)
+    })
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
