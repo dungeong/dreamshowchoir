@@ -1,6 +1,5 @@
 package kr.ulsan.dreamshowchoir.dungeong.config;
 
-import kr.ulsan.dreamshowchoir.dungeong.config.auth.CustomAuthenticationEntryPoint;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginFailureHandler;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginSuccessHandler;
@@ -25,7 +24,6 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
-    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean // 이 메소드가 반환하는 SecurityFilterChain 객체를 Spring Bean으로 등록
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -118,6 +116,8 @@ public class SecurityConfig {
                 .failureHandler(oAuth2LoginFailureHandler)      // 로그인 실패 시 에러 처리
         );
 
+        // 스프링 시큐리티 기본 로그아웃 비활성화
+        http.logout(AbstractHttpConfigurer::disable);
 
         // --------------- JWT 필터 등록
         // Spring Security의 기본 인증 필터보다 직접 만든 JWT 필터를 먼저 실행하도록 순서를 지정

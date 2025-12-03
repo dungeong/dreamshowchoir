@@ -2,14 +2,15 @@ package kr.ulsan.dreamshowchoir.dungeong.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth (인증)", description = "사용자 인증 및 정보 관련 API")
 @RestController
@@ -39,5 +40,32 @@ public class AuthController {
 
         // 200 OK 상태와 함께 사용자 정보를 응답
         return ResponseEntity.ok(userInfo);
+    }
+
+    /**
+     * Access Token 갱신 API
+     */
+    @PostMapping("/refresh")
+    public ResponseEntity<JwtTokenDto> refreshAccessToken(
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            HttpServletResponse response
+    ) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 쿠키가 없으면 401
+        }
+        JwtTokenDto newToken = authService.refreshAccessToken(refreshToken, response);
+        return ResponseEntity.ok(newToken);
+    }
+
+    /**
+     * 로그아웃 API
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @CookieValue(value = "refresh_token", required = false) String refreshToken,
+            HttpServletResponse response
+    ) {
+        authService.logout(refreshToken, response);
+        return ResponseEntity.noContent().build();
     }
 }

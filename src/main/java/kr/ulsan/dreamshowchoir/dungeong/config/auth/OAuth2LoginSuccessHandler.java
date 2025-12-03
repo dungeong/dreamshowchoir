@@ -1,95 +1,76 @@
 package kr.ulsan.dreamshowchoir.dungeong.config.auth;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.ulsan.dreamshowchoir.dungeong.config.jwt.JwtTokenProvider;
-import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
+import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    private final JwtTokenProvider jwtTokenProvider;
     private final AuthService authService;
-    private final ClientRegistrationRepository clientRegistrationRepository;
 
     // (TODO: 나중에 application.properties에서 프론트엔드 주소를 주입받도록 수정)
-    private final String FRONTEND_REDIRECT_URL = "http://localhost:3000/auth/callback"; // 프론트엔드의 OAuth 콜백 주소
+    // 프론트엔드의 OAuth 콜백 주소
+    private final String FRONTEND_REDIRECT_URL = "http://localhost:3000/auth/callback";
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 
-        // Spring Security가 반환한 Principal(DefaultOidcUser 등)을 가져옴
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        log.info("OAuth2 Login 성공! 토큰 발급 시작");
 
-        // Authentication 객체를 OAuth2AuthenticationToken으로 형변환
-        OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+        // AuthService를 통해 토큰 발급 (Access Token 생성, Refresh Token 쿠키 설정 완료)
+        // issueTokens 내부에서 UserPrincipal 정보를 바탕으로 토큰을 생성
+        JwtTokenDto tokenDto = authService.issueTokens(authentication, response);
 
-        // 공급자 ID(e.g., google, kakao)를 가져옴
-        String providerId = oauthToken.getAuthorizedClientRegistrationId();
+        log.info("토큰 발급 완료. Access Token: {}, Refresh Token 쿠키 설정됨", tokenDto.getAccessToken());
 
-        // 주입받은 Repository에서 'ClientRegistration' 객체를 조회
-        ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(providerId);
+        // 먼저 설정된 URL 문자열을 안전하게 URI 객체로 변환
+        URI baseUri = URI.create(FRONTEND_REDIRECT_URL);
 
-        // applcication.properties에 설정된 'userNameAttributeName' ("sub", "id", "response")을 동적으로 가져옴
-        String userNameAttributeName = clientRegistration
-                .getProviderDetails()
-                .getUserInfoEndpoint()
-                .getUserNameAttributeName();
+        // UriComponentsBuilder.newInstance()를 사용하여 명시적으로 조립
+        String targetUrl = UriComponentsBuilder.newInstance()
+                .scheme(baseUri.getScheme()) // 예: http 또는 https
+                .host(baseUri.getHost())     // 예: localhost 또는 dreamshowchoir.kr
+                .port(baseUri.getPort())     // 예: 3000 (포트가 없으면 -1이 반환되는데, 이 경우 생략됨)
+                .path(baseUri.getPath())     // 예: /oauth/callback
+                .queryParam("token", tokenDto.getAccessToken()) // 토큰 파라미터 추가
+                .build()
+                .toUriString();
 
-        // userNameAttributeName을 전달
-        OAuthAttributes attributes = OAuthAttributes.of(
-                providerId,
-                userNameAttributeName,
-                oAuth2User.getAttributes()
-        );
-
-        // AuthService를 호출하여 DB에 유저 저장/업데이트
-        User user = authService.loadOrRegisterUser(
-                attributes.getProvider(),
-                attributes.getOauthId(),
-                attributes.getEmail(),
-                attributes.getName(),
-                attributes.getProfileImageKey()
-        );
-
-        // DB의 User 객체로 UserPrincipal 생성
-        UserPrincipal userPrincipal = new UserPrincipal(user);
-
-        // UserPrincipal로 새로운 Authentication 객체 생성 (JWT 생성용)
-        Authentication authForToken = new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
-                userPrincipal,
-                null,
-                userPrincipal.getAuthorities()
-        );
-
-        // 새로운 Authentication 객체로 JWT 토큰 생성
-        String jwtToken = jwtTokenProvider.createToken(authForToken);
-
-        // 토큰을 쿼리 파라미터에 담아 프론트엔드 URL로 리디렉션
-        String targetUrl = UriComponentsBuilder.fromUriString(FRONTEND_REDIRECT_URL)
-                .queryParam("token", jwtToken) // 토큰을 "token"이라는 이름의 쿼리 파라미터로 추가
-                .build().toUriString();
+        // 리다이렉트 URL 보안 검증 (Open Redirect 방지)
+        if (!isAuthorizedRedirectUri(targetUrl)) {
+            log.error("보안 위배: 허용되지 않은 리다이렉트 URI 입니다. Target: {}", targetUrl);
+            throw new SecurityException("허용되지 않은 리다이렉트 URI 입니다.");
+        }
 
         // 세션 기반이 아니므로, 기존 인증 관련 세션 데이터를 삭제
         clearAuthenticationAttributes(request);
 
         // 지정된 URL로 리디렉션
+        log.info("프론트엔드로 리디렉션: {}", targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    // 헬퍼 메소드: 생성된 URL이 설정된 프론트엔드 주소로 시작하는지 검증
+    private boolean isAuthorizedRedirectUri(String uri) {
+        URI clientRedirectUri = URI.create(uri);
+        URI authorizedUri = URI.create(FRONTEND_REDIRECT_URL);
+
+        // 호스트(도메인)와 포트가 일치하는지 확인
+        // 예: localhost == localhost, 3000 == 3000
+        return authorizedUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                && authorizedUri.getPort() == clientRedirectUri.getPort();
     }
 }

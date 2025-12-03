@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.UserPrincipal;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -23,7 +26,15 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
+    // Access Token 만료 시간 Getter
+    @Getter
     private final long tokenValidityInMilliseconds;
+
+    // Refresh Token 만료 시간 Getter
+    // application.properties에 설정할 Refresh Token 만료 시간 (예: 14일 = 1209600000 밀리초)
+    @Getter
+    @Value("${jwt.refresh-token-validity-in-milliseconds}")
+    private long refreshTokenValidityInMilliseconds;
 
     // application-oauth.properties에서 설정값 주입
     public JwtTokenProvider(
@@ -102,4 +113,24 @@ public class JwtTokenProvider {
         }
         return false;
     }
+
+    // Refresh Token 생성 메소드 (Access Token과 만료 시간만 다름)
+    public String createRefreshToken(Authentication authentication) {
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + this.refreshTokenValidityInMilliseconds))
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    // Refresh Token 만료 시간 가져오기 (DB 저장용)
+    public LocalDateTime getRefreshTokenExpiryDate(String token) {
+        Date expiration = Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody().getExpiration();
+        return expiration.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
 }
