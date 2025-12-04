@@ -26,12 +26,13 @@ public class AuthController {
 
     /**
      * 현재 로그인된 사용자의 정보를 반환하는 API
+     * (GET /api/auth/me)
      *
      * @param userId @AuthenticationPrincipal을 통해 Spring Security가 주입해주는 현재 사용자의 ID
      * @return UserResponseDto
      */
     @Operation(summary = "내 정보 조회", description = "현재 로그인된 사용자의 정보를 조회합니다.")
-    @GetMapping("/me") // GET /api/auth/me 요청을 처리
+    @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyInfo(@AuthenticationPrincipal Long userId) {
 
         // userId가 null이면 로그인되지 않은 상태이므로, 401 Unauthorized 응답
@@ -48,6 +49,7 @@ public class AuthController {
 
     /**
      * Access Token 갱신 API
+     * (POST /api/auth/refresh)
      */
     @Operation(summary = "Access Token 갱신", description = "HttpOnly 쿠키에 저장된 Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.")
     @ApiResponses(value = {
@@ -69,6 +71,7 @@ public class AuthController {
 
     /**
      * 로그아웃 API
+     * (POST /api/auth/logout)
      */
     @Operation(summary = "로그아웃", description = "서버 데이터베이스에서 Refresh Token을 삭제하고, 클라이언트의 Refresh Token 쿠키를 만료시킵니다.")
     @ApiResponses(value = {

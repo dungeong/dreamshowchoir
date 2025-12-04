@@ -64,7 +64,8 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/v3/api-docs/**",  // Springdoc API 문서
                         "/api-docs/**",
-                        "/api/activity-materials/**"   // 활동 자료 조회
+                        "/api/activity-materials/**",   // 활동 자료 조회
+                        "/api/auth/refresh"
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET,        // 읽기
                         "/api/banners",             // 배너
