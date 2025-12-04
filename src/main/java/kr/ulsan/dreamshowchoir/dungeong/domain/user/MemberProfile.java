@@ -78,4 +78,29 @@ public class MemberProfile {
         this.profileImageKey = profileImageKey;
         this.updatedAt = LocalDateTime.now();
     }
+
+    /**
+     * [본인용] 프로필 텍스트 정보 수정
+     */
+    public void updateProfileInfo(String part, String interests, String myDream, String hashTags) {
+        if (part != null) {
+            this.part = part;
+        }
+        if (interests != null) {
+            this.interests = interests;
+        }
+        if (myDream != null) {
+            this.myDream = myDream;
+        }
+        if (hashTags != null) {
+            this.hashTags = hashTags;
+        }
+    }
+
+    /**
+     * [관리자용] 프로필 공개 여부 변경
+     */
+    public void changeVisibility(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }

@@ -1,6 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
@@ -92,6 +93,29 @@ public class UserService {
                 requestDto.getGender()
         );
 
+        // 단원(MEMBER)이라면 프로필 정보도 수정
+        if (user.getRole() == Role.MEMBER) {
+            MemberProfile profile = user.getMemberProfile();
+
+            // 만약 프로필이 없다면 생성 (방어 코드)
+            if (profile == null) {
+                profile = MemberProfile.builder()
+                        .user(user)
+                        .part(requestDto.getPart()) // 초기값
+                        .build();
+                // (Repository save 로직이 필요하거나 Cascade 설정을 믿어야 함)
+                // 보통 가입 승인 시 프로필이 생기므로 여기서는 update만 호출
+            }
+
+            // 프로필 업데이트 (Entity에 편의 메서드 추가 필요)
+            profile.updateProfileInfo(
+                    requestDto.getPart(),
+                    requestDto.getInterests(),
+                    requestDto.getMyDream(),
+                    requestDto.getHashTags()
+            );
+        }
+
         return UserResponseDto.builder()
                 .user(user)
                 .profile(user.getMemberProfile())
@@ -110,5 +134,20 @@ public class UserService {
         // 탈퇴 시 연관된 MemberProfile 등은 Cascade 설정에 따라 처리됨.
         // User 엔티티에 @SQLDelete가 적용되어 있으므로 delete() 호출 시 Soft Delete 됨.
         userRepository.delete(user);
+    }
+
+    /**
+     * [관리자용] 특정 단원의 프로필 공개 여부 변경
+     */
+    public void changeMemberVisibility(Long targetUserId, boolean isPublic) {
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + targetUserId));
+
+        MemberProfile profile = user.getMemberProfile();
+        if (profile == null) {
+            throw new IllegalStateException("해당 유저는 단원 프로필이 존재하지 않습니다.");
+        }
+
+        profile.changeVisibility(isPublic);
     }
 }

@@ -60,6 +60,7 @@ public class AdminController {
     private final GalleryService galleryService;
     private final ActivityMaterialService activityMaterialService;
     private final BannerService bannerService;
+    private final UserService userService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -533,5 +534,26 @@ public class AdminController {
     public ResponseEntity<Void> deleteBanner(@PathVariable Long bannerId) {
         bannerService.deleteBanner(bannerId);
         return ResponseEntity.noContent().build();
+    }
+
+    // ---------------- 단원 정보 -------------------
+
+    /**
+     * (관리자용) 단원 프로필 공개/비공개 전환
+     * (PATCH /api/admin/members/{userId}/visibility)
+     * * Body: { "isPublic": true }
+     */
+    @PatchMapping("/members/{userId}/visibility")
+    public ResponseEntity<Void> changeMemberVisibility(
+            @PathVariable Long userId,
+            @RequestBody java.util.Map<String, Boolean> request // 간단한 JSON이라 Map 사용
+    ) {
+        Boolean isPublic = request.get("isPublic");
+        if (isPublic == null) {
+            throw new IllegalArgumentException("isPublic 값이 필요합니다.");
+        }
+
+        userService.changeMemberVisibility(userId, isPublic);
+        return ResponseEntity.ok().build();
     }
 }

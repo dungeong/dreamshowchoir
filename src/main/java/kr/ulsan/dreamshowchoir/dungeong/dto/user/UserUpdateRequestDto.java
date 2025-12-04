@@ -24,4 +24,10 @@ public class UserUpdateRequestDto {
 
     @NotBlank(message = "성별을 선택해주세요.")
     private String gender;
+
+    // MemberProfile 정보 (단원 전용)
+    private String part;       // 파트
+    private String interests;  // 관심사
+    private String myDream;    // 나의 꿈
+    private String hashTags;   // 해시태그
 }
