@@ -64,7 +64,7 @@ public class GalleryService {
             galleryPage = galleryRepository.findAll(pageable);
         } else {
             // 타입이 있으면 -> 타입별 조회 메서드 호출
-            galleryPage = galleryRepository.findByType(type.name(), pageable);
+            galleryPage = galleryRepository.findByType(type, pageable);
         }
 
         Page<GalleryListResponseDto> dtoPage = galleryPage.map(GalleryListResponseDto::new);
