@@ -82,6 +82,12 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/inquiry").permitAll()   // 문의 생성
 
+                // "GUEST"만 (최초 가입)
+                .requestMatchers("/api/users/sign-up").hasRole("GUEST")
+
+                // "GUEST"만 빼고 (개인 정보 수정)
+                .requestMatchers(HttpMethod.PATCH, "/api/users/me").hasAnyRole("USER", "MEMBER", "ADMIN")
+
                 // "USER"만 (단원 가입 신청)
                 .requestMatchers("/api/join").hasRole("USER")
 

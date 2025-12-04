@@ -1,6 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
@@ -42,6 +43,11 @@ public class UserService {
                 requestDto.getGender(),
                 requestDto.getTermsAgreed()
         );
+
+        // GUEST 등급 -> USER 등급으로 (가입 완료 처리)
+        if (user.getRole() == Role.GUEST) {
+            user.upgradeToUser();
+        }
 
         // UserResponseDto 생성 및 반환
         // (기존 AuthService의 로직을 참고하여 Builder 사용)

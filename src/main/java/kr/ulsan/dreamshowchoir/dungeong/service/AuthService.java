@@ -60,7 +60,7 @@ public class AuthService {
                     .email(email)
                     .name(name)
                     .profileImageKey(profileImageKey)
-                    .role(Role.USER) // 가입 시 기본 권한은 'USER'(일반 사용자)
+                    .role(Role.GUEST) // 가입 시 기본 권한은 'USER'(일반 사용자)
                     .termsAgreed(false)
                     .build();
             user = userRepository.save(user); // DB에 저장

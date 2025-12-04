@@ -2,10 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.user;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -45,7 +42,9 @@ public class User extends BaseTimeEntity {
     @Column(name = "ROLE", nullable = false)
     private Role role;
 
+    // 양방향 관계 편의 메소드
     // 1:1 관계매핑
+    @Setter
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private MemberProfile memberProfile;
 
@@ -86,11 +85,6 @@ public class User extends BaseTimeEntity {
         this.role = Role.MEMBER;
     }
 
-    // 양방향 관계 편의 메소드
-    public void setMemberProfile(MemberProfile memberProfile) {
-        this.memberProfile = memberProfile;
-    }
-
     // 추가 정보 업데이트 메소드 (Onboarding)
     public void updateAdditionalInfo(String name, String phoneNumber, LocalDate birthDate, String gender, Boolean termsAgreed) {
         this.name = name; // 실명으로 덮어쓰기 (OAuth 이름이 닉네임일 수 있으므로)
@@ -106,5 +100,9 @@ public class User extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.gender = gender;
+    }
+
+    public void upgradeToUser() {
+        this.role = Role.USER;
     }
 }
