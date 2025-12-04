@@ -22,6 +22,7 @@ public class UserResponseDto {
     private String myDream;
     private String hashTags;
     private String memberProfileImageKey; // 단원 전용 프로필 이미지
+    private Boolean isPublic; // 내 프로필 공개 여부
 
     /**
      * Entity를 DTO로 변환하는 생성자
@@ -45,6 +46,7 @@ public class UserResponseDto {
             this.myDream = profile.getMyDream();
             this.hashTags = profile.getHashTags();
             this.memberProfileImageKey = profile.getProfileImageKey();
+            this.isPublic = profile.getIsPublic();
         }
     }
 }

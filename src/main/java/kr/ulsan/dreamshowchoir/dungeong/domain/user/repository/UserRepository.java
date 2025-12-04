@@ -1,6 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.user.repository;
 
 
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,4 +28,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.role = 'MEMBER' AND mp.isPublic = TRUE " +
             "AND (:part IS NULL OR mp.part = :part)")
     Page<User> findPublicMembers(@Param("part") String part, Pageable pageable);
+
+    /**
+     * [관리자용] 전체 회원 목록 조회 (페이징 + 검색 + 필터링)
+     * - role이 null이면 전체 조회
+     * - name이 null이면 전체 조회 (검색어 포함 LIKE 검색)
+     * - MemberProfile은 없어도 조회되어야 하므로 LEFT JOIN FETCH
+     */
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.memberProfile mp " +
+            "WHERE (:role IS NULL OR u.role = :role) " +
+            "AND (:name IS NULL OR u.name LIKE %:name%)")
+    Page<User> findAllForAdmin(@Param("role") Role role, @Param("name") String name, Pageable pageable);
 }

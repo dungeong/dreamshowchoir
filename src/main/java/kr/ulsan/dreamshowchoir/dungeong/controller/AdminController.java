@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.ulsan.dreamshowchoir.dungeong.domain.donation.DonationStatus;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.activity.ActivityMaterialUpdateRequestDto;
@@ -30,6 +31,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserAdminListResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -543,6 +545,7 @@ public class AdminController {
      * (PATCH /api/admin/members/{userId}/visibility)
      * * Body: { "isPublic": true }
      */
+    @Operation(summary = "단원 프로필 공개/비공개 전환", description = "단원 프로필을 공개/비공개로 전환합니다.")
     @PatchMapping("/members/{userId}/visibility")
     public ResponseEntity<Void> changeMemberVisibility(
             @PathVariable Long userId,
@@ -555,5 +558,21 @@ public class AdminController {
 
         userService.changeMemberVisibility(userId, isPublic);
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * (관리자용) 전체 회원 목록 조회 API
+     * (GET /api/admin/users?page=0&size=20&role=MEMBER&name=홍길동)
+     * - role, name 파라미터는 선택 사항 (없으면 전체 조회)
+     */
+    @Operation(summary = "전체 회원 목록 조회", description = "전체 회원 목록을 조회합니다. (role, name 파라미터는 선택 사항 (없으면 전체 조회))")
+    @GetMapping("/users")
+    public ResponseEntity<PageResponseDto<UserAdminListResponseDto>> getUserList(
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) String name,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        PageResponseDto<UserAdminListResponseDto> userList = userService.getUsersForAdmin(role, name, pageable);
+        return ResponseEntity.ok(userList);
     }
 }

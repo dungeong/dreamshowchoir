@@ -6,10 +6,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.user.MemberProfileResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
-import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -149,5 +146,42 @@ public class UserService {
         }
 
         profile.changeVisibility(isPublic);
+    }
+
+    /**
+     * [관리자용] 회원 목록 조회
+     * @param role 등급 필터 (Optional)
+     * @param name 이름 검색어 (Optional)
+     * @param pageable 페이징 정보
+     */
+    @Transactional(readOnly = true)
+    public PageResponseDto<UserAdminListResponseDto> getUsersForAdmin(Role role, String name, Pageable pageable) {
+
+        Page<User> userPage = userRepository.findAllForAdmin(role, name, pageable);
+
+        // Entity -> Admin용 DTO 변환
+        Page<UserAdminListResponseDto> dtoPage = userPage.map(UserAdminListResponseDto::new);
+
+        return new PageResponseDto<>(dtoPage);
+    }
+
+    /**
+     * 내 정보 상세 조회 (User + MemberProfile)
+     * (마이페이지용)
+     */
+    @Transactional(readOnly = true)
+    public UserResponseDto getMyInfo(Long userId) {
+
+        // User 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // MemberProfile 조회 (없으면 null)
+        // (User 엔티티에 @OneToOne 매핑이 되어 있다면 user.getMemberProfile()로 바로 접근 가능)
+        // 만약 Lazy Loading 문제나 명시적 조회가 필요하다면 Repository 사용
+        MemberProfile profile = user.getMemberProfile();
+
+        // DTO 변환
+        return new UserResponseDto(user, profile);
     }
 }
