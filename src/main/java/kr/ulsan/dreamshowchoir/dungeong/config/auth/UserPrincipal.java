@@ -2,6 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.config.auth;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,79 +12,59 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 @Getter
 public class UserPrincipal implements UserDetails, OAuth2User {
 
-    private User user;
-    private Map<String, Object> attributes;
+    private final Long userId;
+    private final String email;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private Map<String, Object> attributes; // OAuth2 제공자로부터 받은 원본 데이터
 
     // 일반 로그인 생성자 (지금은 안 쓰지만 UserDetails를 위해)
     public UserPrincipal(User user) {
-        this.user = user;
+        this.userId = user.getUserId();
+        this.email = user.getEmail();
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getKey()));
     }
 
     // OAuth2 로그인 생성자
     public UserPrincipal(User user, Map<String, Object> attributes) {
-        this.user = user;
+        this.userId = user.getUserId();
+        this.email = user.getEmail();
+        this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getKey()));
         this.attributes = attributes;
     }
 
-    // 컨트롤러에서 @AuthenticationPrincipal로 주입될 때 User 객체가 아닌, 이 User의 'ID'를 직접 주입하도록 편의 메소드를 만듦
-    public Long getUserId() {
-        return user.getUserId();
-    }
-
-    // ------------- UserDetails 구현
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // User의 Role을 Spring Security가 인식하는 권한으로 변환
-        return Collections.singleton(
-                new SimpleGrantedAuthority(user.getRole().getKey())
-        );
-    }
+    // ================================================================
+    // UserDetails 인터페이스 구현 (일반 로그인용)
+    // ================================================================
 
     @Override
-    public String getPassword() {
-        // OAuth 로그인이라 비밀번호는 사용하지 않음
-        return null;
-    }
+    public String getUsername() { return String.valueOf(userId); }
 
     @Override
-    public String getUsername() {
-        // (PK나 이메일 등 고유 식별자)
-        return user.getEmail();
-    }
+    public String getPassword() { return null; }
 
     // (계정 만료/잠금 등은 지금은 사용하지 않으므로 모두 true)
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+    public boolean isAccountNonExpired() { return true; }
 
     @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+    public boolean isAccountNonLocked() { return true; }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() {
-        return user.getDeletedAt() == null; // (논리 삭제되지 않은 사용자만 활성화)
-    }
+    public boolean isEnabled() { return true; }
 
     // ---------------- OAuth2User 구현
     @Override
-    public Map<String, Object> getAttributes() {
-        return this.attributes;
-    }
+    public Map<String, Object> getAttributes() { return attributes; }
 
     @Override
     public String getName() {
-        // OAuth2 제공자가 반환하는 사용자의 고유 식별자 (ID)
-        return user.getOauthId();
+        return String.valueOf(userId);
     }
 }

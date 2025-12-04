@@ -32,6 +32,10 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         log.info("OAuth2 Login 성공! 토큰 발급 시작");
 
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        log.info("로그인한 유저 Principal 정보: ID={}, Email={}", userPrincipal.getUserId(), userPrincipal.getUsername());
+
         // AuthService를 통해 토큰 발급 (Access Token 생성, Refresh Token 쿠키 설정 완료)
         // issueTokens 내부에서 UserPrincipal 정보를 바탕으로 토큰을 생성
         JwtTokenDto tokenDto = authService.issueTokens(authentication, response);

@@ -1,5 +1,6 @@
 package kr.ulsan.dreamshowchoir.dungeong.config;
 
+import kr.ulsan.dreamshowchoir.dungeong.config.auth.CustomOAuth2UserService;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.HttpCookieOAuth2AuthorizationRequestRepository;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginFailureHandler;
 import kr.ulsan.dreamshowchoir.dungeong.config.auth.OAuth2LoginSuccessHandler;
@@ -24,6 +25,7 @@ public class SecurityConfig {
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean // 이 메소드가 반환하는 SecurityFilterChain 객체를 Spring Bean으로 등록
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -115,6 +117,9 @@ public class SecurityConfig {
                         .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository))
                 .successHandler(oAuth2LoginSuccessHandler)      // 로그인 성공 시 JWT 발급
                 .failureHandler(oAuth2LoginFailureHandler)      // 로그인 실패 시 에러 처리
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService)   // 커스텀 유저 서비스 등록
+                )
         );
 
         // 스프링 시큐리티 기본 로그아웃 비활성화
