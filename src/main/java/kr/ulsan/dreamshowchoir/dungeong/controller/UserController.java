@@ -85,15 +85,18 @@ public class UserController {
 
     /**
      * 내 프로필 이미지 수정 API
-     * (PATCH /api/users/me/image)
+     * (PATCH /api/users/me/image?target=USER) -> 기본 프로필 수정
+     * (PATCH /api/users/me/image?target=MEMBER) -> 단원 프로필 수정
      * (로그인한 사용자 누구나 가능)
      */
+    @Operation(summary = "내 프로필 이미지 수정", description = "로그인한 사용자의 프로필 이미지를 수정합니다.")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDto> updateProfileImage(
             @RequestPart(value = "file") MultipartFile file,
+            @RequestParam(value = "target", defaultValue = "USER") String target,
             @AuthenticationPrincipal Long userId
     ) {
-        UserResponseDto updatedUser = userService.updateProfileImage(userId, file);
+        UserResponseDto updatedUser = userService.updateProfileImage(userId, file, target);
         return ResponseEntity.ok(updatedUser);
     }
 }

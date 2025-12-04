@@ -190,26 +190,39 @@ public class UserService {
     /**
      * 내 프로필 이미지 수정 (S3 업로드)
      */
-    public UserResponseDto updateProfileImage(Long userId, MultipartFile file) {
+    public UserResponseDto updateProfileImage(Long userId, MultipartFile file, String target) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
-        // 1. 기존 이미지가 있다면 S3에서 삭제 (기본 이미지가 아닐 경우)
-        // (OAuth 기본 이미지는 http로 시작하는 경우가 많고, 우리가 올린 건 UUID 형태일 수 있음)
-        // S3Service.deleteFile 내부에서 s3Key가 맞는지 체크하므로 호출해도 안전함
-        if (user.getProfileImageKey() != null && !user.getProfileImageKey().isEmpty()) {
-            s3Service.deleteFile(user.getProfileImageKey());
+        // 타겟 확인 및 기존 이미지 삭제
+        String oldImageKey;
+
+        if ("MEMBER".equalsIgnoreCase(target)) {
+            // [단원 프로필 수정]
+            if (user.getRole() != Role.MEMBER || user.getMemberProfile() == null) {
+                throw new IllegalStateException("정단원만 단원 프로필 이미지를 설정할 수 있습니다.");
+            }
+            oldImageKey = user.getMemberProfile().getProfileImageKey();
+        } else {
+            // [기본 유저 프로필 수정]
+            oldImageKey = user.getProfileImageKey();
         }
 
-        // 2. 새 이미지 업로드
-        String imageUrl = s3Service.uploadFile(file, "profile");
+        // 기존 파일 삭제 (S3)
+        if (oldImageKey != null && !oldImageKey.isEmpty()) {
+            s3Service.deleteFile(oldImageKey);
+        }
 
-        // 3. DB 업데이트
-        user.updateProfileImage(imageUrl);
+        // 새 이미지 업로드
+        // 폴더명을 구분하면 관리가 더 편함 (profile/user vs profile/member)
+        String folderName = "MEMBER".equalsIgnoreCase(target) ? "profile/member" : "profile/user";
+        String newImageUrl = s3Service.uploadFile(file, folderName);
 
-        // 4. (선택) 만약 정단원(MEMBER)이고, MemberProfile에도 사진을 따로 관리한다면 거기에도 반영
-        if (user.getRole() == Role.MEMBER && user.getMemberProfile() != null) {
-            user.getMemberProfile().updateProfileImage(imageUrl);
+        // DB 업데이트 (분기 처리)
+        if ("MEMBER".equalsIgnoreCase(target)) {
+            user.getMemberProfile().updateProfileImage(newImageUrl);
+        } else {
+            user.updateProfileImage(newImageUrl);
         }
 
         return new UserResponseDto(user, user.getMemberProfile());

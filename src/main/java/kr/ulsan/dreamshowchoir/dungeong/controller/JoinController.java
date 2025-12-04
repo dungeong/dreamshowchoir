@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Join (가입 신청)", description = "단원 가입 신청 관련 API")
 @RestController
 @RequestMapping("/api/join")
@@ -52,14 +54,10 @@ public class JoinController {
      */
     @Operation(summary = "내 가입 신청 상태 조회", description = "현재 로그인한 사용자의 가입 신청 상태를 조회합니다.")
     @GetMapping("/me")
-    public ResponseEntity<JoinApplicationResponseDto> getMyApplication(
-            @AuthenticationPrincipal Long userId // JWT에서 사용자 ID 추출
+    public ResponseEntity<List<JoinApplicationResponseDto>> getMyApplications(
+            @AuthenticationPrincipal Long userId
     ) {
-
-        // Service를 호출하여 신청서 정보 조회
-        JoinApplicationResponseDto applicationDto = joinService.getMyApplication(userId);
-
-        // 200 OK 상태와 함께 정보 반환
-        return ResponseEntity.ok(applicationDto);
+        // List 반환 (없으면 [])
+        return ResponseEntity.ok(joinService.getMyApplications(userId));
     }
 }

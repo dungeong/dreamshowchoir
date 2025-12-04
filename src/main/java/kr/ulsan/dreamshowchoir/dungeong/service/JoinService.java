@@ -21,6 +21,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional // 클래스 레벨 트랜잭션 (모든 public 메소드에 적용)
@@ -68,14 +71,13 @@ public class JoinService {
      * @return 신청서 상세 정보 DTO
      */
     @Transactional(readOnly = true)
-    public JoinApplicationResponseDto getMyApplication(Long userId) {
+    public List<JoinApplicationResponseDto> getMyApplications(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
-        // Repository를 통해 신청서를 조회
-        JoinApplication application = joinApplicationRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("제출한 가입 신청서가 존재하지 않습니다.")); // 신청서가 없으면 404 예외
-
-        // 엔티티를 DTO로 변환하여 반환
-        return new JoinApplicationResponseDto(application);
+        return joinApplicationRepository.findAllByUserOrderByCreatedAtDesc(user).stream()
+                .map(JoinApplicationResponseDto::new)
+                .collect(Collectors.toList());
     }
 
     /**
