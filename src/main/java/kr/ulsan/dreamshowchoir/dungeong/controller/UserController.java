@@ -8,9 +8,11 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserSignUpRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "User (사용자)", description = "사용자 정보 관련 API")
 @RestController
@@ -79,5 +81,19 @@ public class UserController {
     public ResponseEntity<Void> withdraw(@AuthenticationPrincipal Long userId) {
         userService.withdraw(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 내 프로필 이미지 수정 API
+     * (PATCH /api/users/me/image)
+     * (로그인한 사용자 누구나 가능)
+     */
+    @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponseDto> updateProfileImage(
+            @RequestPart(value = "file") MultipartFile file,
+            @AuthenticationPrincipal Long userId
+    ) {
+        UserResponseDto updatedUser = userService.updateProfileImage(userId, file);
+        return ResponseEntity.ok(updatedUser);
     }
 }

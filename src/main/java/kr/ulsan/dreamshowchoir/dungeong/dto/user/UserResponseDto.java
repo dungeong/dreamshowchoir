@@ -6,6 +6,8 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 public class UserResponseDto {
 
@@ -15,6 +17,10 @@ public class UserResponseDto {
     private final String name;
     private final String profileImageKey; // User의 기본 프로필 이미지
     private final Role role; // 사용자 권한 (USER, MEMBER, ADMIN)
+    private final String phoneNumber;
+    private final LocalDate birthDate;
+    private final String gender;
+    private final Boolean termsAgreed;
 
     // MemberProfile 정보 (단원일 경우)
     private String part;
@@ -38,6 +44,10 @@ public class UserResponseDto {
         this.name = user.getName();
         this.profileImageKey = user.getProfileImageKey();
         this.role = user.getRole();
+        this.phoneNumber = user.getPhoneNumber();
+        this.birthDate = user.getBirthDate();
+        this.gender = user.getGender();
+        this.termsAgreed = user.getTermsAgreed();
 
         // MemberProfile 정보 매핑
         if (profile != null) {

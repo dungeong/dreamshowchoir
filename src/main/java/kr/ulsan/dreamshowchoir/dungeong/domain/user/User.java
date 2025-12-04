@@ -63,7 +63,7 @@ public class User extends BaseTimeEntity {
 
     // 생성자
     @Builder
-    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role, Boolean termsAgreed) {
+    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role, Boolean termsAgreed, String phoneNumber, LocalDate birthDate, String gender) {
         this.oauthProvider = oauthProvider;
         this.oauthId = oauthId;
         this.email = email;
@@ -71,6 +71,9 @@ public class User extends BaseTimeEntity {
         this.profileImageKey = profileImageKey;
         this.role = role;
         this.termsAgreed = termsAgreed;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+        this.gender = gender;
     }
 
     // OAuth2 로그인 시 기존 회원 정보 업데이트
@@ -104,5 +107,10 @@ public class User extends BaseTimeEntity {
 
     public void upgradeToUser() {
         this.role = Role.USER;
+    }
+
+    // 프로필 이미지 업데이트
+    public void updateProfileImage(String profileImageKey) {
+        this.profileImageKey = profileImageKey;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     /**
      * OAuth 로그인 후, 추가 필수 정보(핸드폰, 생년월일 등)를 입력받아 저장한다.
@@ -183,5 +185,33 @@ public class UserService {
 
         // DTO 변환
         return new UserResponseDto(user, profile);
+    }
+
+    /**
+     * 내 프로필 이미지 수정 (S3 업로드)
+     */
+    public UserResponseDto updateProfileImage(Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 1. 기존 이미지가 있다면 S3에서 삭제 (기본 이미지가 아닐 경우)
+        // (OAuth 기본 이미지는 http로 시작하는 경우가 많고, 우리가 올린 건 UUID 형태일 수 있음)
+        // S3Service.deleteFile 내부에서 s3Key가 맞는지 체크하므로 호출해도 안전함
+        if (user.getProfileImageKey() != null && !user.getProfileImageKey().isEmpty()) {
+            s3Service.deleteFile(user.getProfileImageKey());
+        }
+
+        // 2. 새 이미지 업로드
+        String imageUrl = s3Service.uploadFile(file, "profile");
+
+        // 3. DB 업데이트
+        user.updateProfileImage(imageUrl);
+
+        // 4. (선택) 만약 정단원(MEMBER)이고, MemberProfile에도 사진을 따로 관리한다면 거기에도 반영
+        if (user.getRole() == Role.MEMBER && user.getMemberProfile() != null) {
+            user.getMemberProfile().updateProfileImage(imageUrl);
+        }
+
+        return new UserResponseDto(user, user.getMemberProfile());
     }
 }

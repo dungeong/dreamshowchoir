@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -42,7 +43,8 @@ public class AuthService {
      * @return 로그인한 사용자의 DTO
      */
     @Transactional
-    public User loadOrRegisterUser(String provider, String oauthId, String email, String name, String profileImageKey) {
+    public User loadOrRegisterUser(String provider, String oauthId, String email, String name, String profileImageKey,
+                                   String phoneNumber, LocalDate birthDate, String gender) {
 
         // DB에서 OAuth 정보로 사용자를 찾음
         Optional<User> optionalUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
@@ -62,6 +64,9 @@ public class AuthService {
                     .profileImageKey(profileImageKey)
                     .role(Role.GUEST) // 가입 시 기본 권한은 'USER'(일반 사용자)
                     .termsAgreed(false)
+                    .phoneNumber(phoneNumber)
+                    .birthDate(birthDate)
+                    .gender(gender)
                     .build();
             user = userRepository.save(user); // DB에 저장
         }

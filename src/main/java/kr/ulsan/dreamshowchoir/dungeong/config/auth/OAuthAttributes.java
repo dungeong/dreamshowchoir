@@ -5,6 +5,7 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Getter
@@ -16,9 +17,12 @@ public class OAuthAttributes {
     private final String profileImageKey;
     private final String oauthId;
     private final String provider;
+    private final String phoneNumber;
+    private final LocalDate birthDate;
+    private final String gender;
 
     @Builder
-    public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String profileImageKey, String oauthId, String provider) {
+    public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String profileImageKey, String oauthId, String provider, String phoneNumber, LocalDate birthDate, String gender) {
         this.attributes = attributes;
         this.nameAttributeKey = nameAttributeKey;
         this.name = name;
@@ -26,6 +30,9 @@ public class OAuthAttributes {
         this.profileImageKey = profileImageKey;
         this.oauthId = oauthId;
         this.provider = provider;
+        this.phoneNumber = phoneNumber;
+        this.birthDate = birthDate;
+        this.gender = gender;
     }
 
     // 넘어온 attributes를 보고 Google인지 Kakao인지 판단하여 파싱
@@ -46,6 +53,24 @@ public class OAuthAttributes {
         // "response" 키로 중첩된 Map을 한 번 더 가져와야 함
         Map<String, Object> response = (Map<String, Object>) attributes.get(userNameAttributeName); // userNameAttributeName == "response"
 
+        // 생일 파싱
+        LocalDate birthDate = null;
+        if (response.get("birthyear") != null && response.get("birthday") != null) {
+            String year = (String) response.get("birthyear");
+            String day = (String) response.get("birthday");
+            birthDate = LocalDate.parse(year + "-" + day); // "1999-10-12"
+        }
+
+        // 성별 변환
+        String gender = null;
+        if (response.get("gender") != null) {
+            String naverGender = (String) response.get("gender");
+            gender = "M".equals(naverGender) ? "MALE" : "FEMALE";
+        }
+
+        // 전화번호
+        String phoneNumber = (String) response.get("mobile");
+
         return OAuthAttributes.builder()
                 .name((String) response.get("name"))
                 .email((String) response.get("email"))
@@ -54,6 +79,9 @@ public class OAuthAttributes {
                 .provider("naver")
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName) // "response"
+                .phoneNumber(phoneNumber)
+                .birthDate(birthDate)
+                .gender(gender)
                 .build();
     }
 
@@ -65,6 +93,29 @@ public class OAuthAttributes {
         String nickname = null;
         String profileImageUrl = null;
         String email = null;
+
+        // 전화번호 처리
+        String phoneNumber = (String) kakaoAccount.get("phone_number");
+        if (phoneNumber != null && phoneNumber.startsWith("+82 ")) {
+            phoneNumber = "0" + phoneNumber.substring(4);
+        }
+
+        // 생일 처리 (birthyear: "2002", birthday: "1130" -> LocalDate)
+        LocalDate birthDate = null;
+        if (kakaoAccount.get("birthyear") != null && kakaoAccount.get("birthday") != null) {
+            String year = (String) kakaoAccount.get("birthyear");
+            String birthday = (String) kakaoAccount.get("birthday"); // "1130" (MMDD)
+            String month = birthday.substring(0, 2);
+            String day = birthday.substring(2);
+            birthDate = LocalDate.parse(year + "-" + month + "-" + day);
+        }
+
+        // 성별 처리 ("female" / "male" -> "FEMALE" / "MALE")
+        String gender = null;
+        if (kakaoAccount.get("gender") != null) {
+            String kakaoGender = (String) kakaoAccount.get("gender");
+            gender = kakaoGender.equalsIgnoreCase("male") ? "MALE" : "FEMALE";
+        }
 
         // 프로필 정보 (선택 동의)
         if (kakaoAccount.containsKey("profile")) {
@@ -86,6 +137,9 @@ public class OAuthAttributes {
                 .provider("kakao")
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
+                .phoneNumber(phoneNumber)
+                .birthDate(birthDate)
+                .gender(gender)
                 .build();
     }
 

@@ -41,7 +41,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 attributes.getOauthId(),
                 attributes.getEmail(),
                 attributes.getName(),
-                attributes.getProfileImageKey()
+                attributes.getProfileImageKey(),
+                attributes.getPhoneNumber(),
+                attributes.getBirthDate(),
+                attributes.getGender()
         );
 
         log.info("OAuth2 로그인 성공. 사용자 정보: {}", user.getEmail());
