@@ -67,6 +67,7 @@ public class AdminController {
     private final BannerService bannerService;
     private final UserService userService;
     private final SheetService sheetService;
+    private final PostService postService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -640,6 +641,22 @@ public class AdminController {
             @AuthenticationPrincipal Long userId
     ) {
         sheetService.deleteSheet(sheetId, userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // -----------------------------
+    /**
+     * (관리자용) 게시글 강제 삭제
+     * DELETE /api/admin/posts/{postId}
+     */
+    @Operation(summary = "게시글 강제 삭제", description = "관리자 권한으로 게시글을 강제 삭제합니다.")
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Void> deletePost(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        postService.deletePost(postId, userId);
 
         return ResponseEntity.noContent().build();
     }

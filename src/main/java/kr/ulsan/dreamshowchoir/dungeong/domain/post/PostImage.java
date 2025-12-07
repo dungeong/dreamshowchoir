@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -22,6 +23,7 @@ public class PostImage {
     @Column(name = "IMAGE_ID")
     private Long imageId;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "POST_ID", nullable = false)
     private kr.ulsan.dreamshowchoir.dungeong.domain.post.Post post;
@@ -46,9 +48,5 @@ public class PostImage {
         this.imageKey = imageKey;
         this.imageName = imageName;
         this.fileSize = fileSize;
-    }
-
-    public void setPost(kr.ulsan.dreamshowchoir.dungeong.domain.post.Post post) {
-        this.post = post;
     }
 }
