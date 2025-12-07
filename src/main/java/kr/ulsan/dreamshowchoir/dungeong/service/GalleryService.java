@@ -18,6 +18,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.gallery.GalleryUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -59,12 +60,14 @@ public class GalleryService {
     public PageResponseDto<GalleryListResponseDto> getGalleryList(GalleryType type, Pageable pageable) {
         Page<Gallery> galleryPage;
 
-        if (type == null) {
-            // 타입이 없으면 -> 전체 조회 메서드 호출
-            galleryPage = galleryRepository.findAll(pageable);
+        // Repository 쿼리에 정렬을 이미 하드코딩 해서, Pageable에서 정렬 정보는 제거하고 나머지만 남겨서 전달
+        Pageable unsortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+
+        if (type != null) {
+            // Enum 객체 대신 .name()으로 문자열 변환해서 전달
+            galleryPage = galleryRepository.findByType(type.name(), unsortedPageable);
         } else {
-            // 타입이 있으면 -> 타입별 조회 메서드 호출
-            galleryPage = galleryRepository.findByType(type, pageable);
+            galleryPage = galleryRepository.findAll(pageable);
         }
 
         Page<GalleryListResponseDto> dtoPage = galleryPage.map(GalleryListResponseDto::new);
