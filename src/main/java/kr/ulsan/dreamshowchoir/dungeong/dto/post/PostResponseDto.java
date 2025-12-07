@@ -18,6 +18,7 @@ public class PostResponseDto {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final List<PostImageDto> images;
+    private final String authorProfileImage;
 
     /**
      * Entity를 DTO로 변환하는 생성자
@@ -33,5 +34,6 @@ public class PostResponseDto {
         this.images = post.getPostImages().stream()
                 .map(PostImageDto::new)
                 .collect(Collectors.toList());
+        this.authorProfileImage = post.getUser().getProfileImageKey();
     }
 }

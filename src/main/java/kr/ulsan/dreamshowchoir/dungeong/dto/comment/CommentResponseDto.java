@@ -15,6 +15,8 @@ public class CommentResponseDto {
     private final Long postId;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final String authorProfileImage;
+
 
     /**
      * Entity를 DTO로 변환하는 생성자
@@ -27,5 +29,6 @@ public class CommentResponseDto {
         this.postId = comment.getPost().getPostId();
         this.createdAt = comment.getCreatedAt();
         this.updatedAt = comment.getUpdatedAt();
+        this.authorProfileImage = comment.getUser().getProfileImageKey();
     }
 }
