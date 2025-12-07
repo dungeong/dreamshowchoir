@@ -74,7 +74,6 @@ public class SecurityConfig {
                         "/api/info/**",             // 단원 소개
                         "/api/activity-materials/**",   // 활동자료
                         "/api/gallery/**",          // 갤러리
-                        "/api/notices/**",          // 공지사항
                         "/api/faq/**",              // FAQ
                         "/api/history",             // 연혁
                         "/api/content/**",           // 통합 콘텐츠
