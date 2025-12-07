@@ -32,6 +32,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeUpdateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserAdminListResponseDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "Admin (관리자)", description = "관리자 전용 API")
 @RestController
@@ -574,5 +576,36 @@ public class AdminController {
     ) {
         PageResponseDto<UserAdminListResponseDto> userList = userService.getUsersForAdmin(role, name, pageable);
         return ResponseEntity.ok(userList);
+    }
+
+    /**
+     * [관리자] 회원 강제 추방 API
+     * DELETE /api/admin/users/{userId}
+     */
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Void> kickUser(@PathVariable Long userId) {
+        userService.deleteUserByAdmin(userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * 2. 회원 권한 변경 API
+     * (PATCH /api/admin/users/{userId}/role)
+     * Body: { "role": "MEMBER" }
+     */
+    @PatchMapping("/users/{userId}/role")
+    public ResponseEntity<UserResponseDto> updateUserRole(
+            @PathVariable Long userId,
+            @RequestBody Map<String, String> body
+    ) {
+        // JSON Body에서 "role" 값을 꺼내 Enum으로 변환
+        String roleStr = body.get("role");
+        if (roleStr == null) {
+            throw new IllegalArgumentException("Role 값이 필요합니다.");
+        }
+
+        Role newRole = Role.valueOf(roleStr);
+
+        return ResponseEntity.ok(userService.updateUserRole(userId, newRole));
     }
 }

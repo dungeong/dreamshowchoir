@@ -227,4 +227,41 @@ public class UserService {
 
         return new UserResponseDto(user, user.getMemberProfile());
     }
+
+    /**
+     * [관리자용] 회원 강제 추방
+     */
+    @Transactional
+    public void deleteUserByAdmin(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다."));
+
+        // 프로필 이미지가 있다면 S3에서 삭제
+        if (user.getProfileImageKey() != null) {
+            s3Service.deleteFile(user.getProfileImageKey());
+        }
+
+        // 단원 프로필 사진도 있다면 삭제
+        if (user.getMemberProfile() != null && user.getMemberProfile().getProfileImageKey() != null) {
+            s3Service.deleteFile(user.getMemberProfile().getProfileImageKey());
+        }
+
+        // DB에서 삭제 (Cascade 설정에 따라 연관 데이터도 삭제됨)
+        userRepository.delete(user);
+    }
+
+    /**
+     * [관리자] 회원 권한(Role) 변경
+     */
+    @Transactional
+    public UserResponseDto updateUserRole(Long userId, Role newRole) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 권한 변경
+        user.updateRole(newRole);
+
+        // 변경된 정보 반환
+        return new UserResponseDto(user, user.getMemberProfile());
+    }
 }

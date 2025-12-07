@@ -105,6 +105,7 @@ public class User extends BaseTimeEntity {
         this.gender = gender;
     }
 
+    // 회원가입 완료
     public void upgradeToUser() {
         this.role = Role.USER;
     }
@@ -112,5 +113,10 @@ public class User extends BaseTimeEntity {
     // 프로필 이미지 업데이트
     public void updateProfileImage(String profileImageKey) {
         this.profileImageKey = profileImageKey;
+    }
+
+    // 회원 권한 변경
+    public void updateRole(Role role) {
+        this.role = role;
     }
 }
