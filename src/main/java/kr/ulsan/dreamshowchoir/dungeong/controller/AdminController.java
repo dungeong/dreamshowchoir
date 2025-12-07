@@ -30,6 +30,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.inquiry.InquiryResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeCreateRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.notice.NoticeUpdateRequestDto;
+import kr.ulsan.dreamshowchoir.dungeong.dto.sheet.SheetResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.JoinApplicationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserAdminListResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
@@ -65,6 +66,7 @@ public class AdminController {
     private final ActivityMaterialService activityMaterialService;
     private final BannerService bannerService;
     private final UserService userService;
+    private final SheetService sheetService;
 
     // ---------------------------------- 가입 신청 ----------------------------------
 
@@ -579,9 +581,10 @@ public class AdminController {
     }
 
     /**
-     * [관리자] 회원 강제 추방 API
+     * (관리자용) 회원 강제 추방 API
      * DELETE /api/admin/users/{userId}
      */
+    @Operation(summary = "회원 강제 추방", description = "회원을 강제로 탈퇴시킵니다.")
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<Void> kickUser(@PathVariable Long userId) {
         userService.deleteUserByAdmin(userId);
@@ -589,10 +592,12 @@ public class AdminController {
     }
 
     /**
-     * 2. 회원 권한 변경 API
+     * (관리자용) 회원 권한 변경 API
      * (PATCH /api/admin/users/{userId}/role)
      * Body: { "role": "MEMBER" }
      */
+
+    @Operation(summary = "회원 권한 변경", description = "회원의 권한(Role)을 변경합니다.")
     @PatchMapping("/users/{userId}/role")
     public ResponseEntity<UserResponseDto> updateUserRole(
             @PathVariable Long userId,
@@ -607,5 +612,35 @@ public class AdminController {
         Role newRole = Role.valueOf(roleStr);
 
         return ResponseEntity.ok(userService.updateUserRole(userId, newRole));
+    }
+
+    //--------------- 악보/자료실 ---------------
+    /**
+     * (관리자용) 악보/자료 업로드
+     * POST /api/admin/sheets
+     */
+    @Operation(summary = "악보/자료 업로드", description = "새로운 악보나 자료 파일을 업로드합니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, value = "/sheets")
+    public ResponseEntity<SheetResponseDto> uploadSheet(
+            @RequestPart(value = "file") MultipartFile file,
+            @AuthenticationPrincipal Long userId
+    ) {
+        SheetResponseDto createdSheet = sheetService.uploadSheet(file, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdSheet);
+    }
+
+    /**
+     * (관리자용) 악보/자료 삭제
+     * DELETE /api/admin/sheets/{sheetId}
+     */
+    @Operation(summary = "악보/자료 삭제", description = "관리자 권한으로 악보 파일을 강제 삭제합니다.")
+    @DeleteMapping("/sheets/{sheetId}")
+    public ResponseEntity<Void> deleteSheet(
+            @PathVariable Long sheetId,
+            @AuthenticationPrincipal Long userId
+    ) {
+        sheetService.deleteSheet(sheetId, userId);
+
+        return ResponseEntity.noContent().build();
     }
 }
