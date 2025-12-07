@@ -140,6 +140,7 @@ public class JoinService {
                         .interests(application.getInterests())
                         .myDream(application.getMyDream())
                         .hashTags(application.getHashTags())
+                        .profileImageKey(application.getProfileImage())
                         .isPublic(true) // 기본값은 공개
                         .build();
                 memberProfileRepository.save(newProfile);

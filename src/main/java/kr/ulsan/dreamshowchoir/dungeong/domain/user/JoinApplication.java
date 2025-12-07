@@ -46,6 +46,9 @@ public class JoinApplication {
     @Column(name = "CREATED_AT", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "PROFILE_IMAGE")
+    private String profileImage;
+
 
     // 승인/거절
     public void approve() {

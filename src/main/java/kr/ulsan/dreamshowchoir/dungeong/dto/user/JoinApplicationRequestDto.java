@@ -18,6 +18,7 @@ public class JoinApplicationRequestDto {
     private String interests;
     private String myDream;
     private String hashTags;
+    private String profileImage;
 
     /**
      * DTO를 JoinApplication 엔티티로 변환하는 편의 메소드
@@ -29,7 +30,7 @@ public class JoinApplicationRequestDto {
                 .interests(this.interests)
                 .myDream(this.myDream)
                 .hashTags(this.hashTags)
-                // Status는 엔티티의 @Builder.Default("PENDING")가 자동으로 설정
+                .profileImage(this.profileImage)
                 .build();
     }
 }
