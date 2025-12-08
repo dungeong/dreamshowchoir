@@ -155,7 +155,7 @@ public class AdminController {
      * (GET /api/admin/inquiry?status=PENDING)
      * (ADMIN 권한 필요)
      */
-    @Operation(summary = "상태별 문의 목록 조회", description = "특정 상태(PENDING, REPLIED)의 문의 목록을 조회합니다.")
+    @Operation(summary = "상태별 문의 목록 조회", description = "특정 상태(PENDING, ANSWERED)의 문의 목록을 조회합니다.")
     @GetMapping("/inquiry")
     public ResponseEntity<PageResponseDto<InquiryResponseDto>> getInquiriesByStatus(
             // 쿼리 파라미터로 status를 받음 (기본값 PENDING)
@@ -488,6 +488,19 @@ public class AdminController {
     }
 
     // --------------------- 배너 ----------------------
+
+    /**
+     * (관리자용) 배너 목록 조회 API
+     * (GET /api/admin/banners)
+     * (전체 공개)
+     *
+     * @return 활성화된 배너 목록 (JSON List)
+     */
+    @Operation(summary = "전체 배너 목록 조회", description = "메인 페이지에 표시될 활성화된 배너 목록을 조회합니다.")
+    @GetMapping("/banners")
+    public ResponseEntity<List<BannerResponseDto>> getBanners() {
+        return ResponseEntity.ok(bannerService.getAllBanners());
+    }
 
     /**
      * (관리자용) 배너 등록 API

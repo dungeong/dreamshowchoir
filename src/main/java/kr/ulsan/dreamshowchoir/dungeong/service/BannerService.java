@@ -34,6 +34,18 @@ public class BannerService {
     }
 
     /**
+     * (관리자용) 전체 배너 목록 조회
+     *
+     * @return 배너 목록 DTO 리스트
+     */
+    @Transactional(readOnly = true)
+    public List<BannerResponseDto> getAllBanners() {
+        return bannerRepository.findAllByOrderByOrderIndexAsc().stream()
+                .map(BannerResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 배너 생성
      * (기본적으로 활성 상태(isActive=true), 순서 0으로 저장)
      *
