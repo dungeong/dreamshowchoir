@@ -21,17 +21,21 @@ public class S3Controller {
     private final S3Service s3Service;
 
     /**
-     * [가입 신청 전용] 이미지 업로드 API
+     * 이미지 업로드 API
      * (POST /api/s3/upload)
-     * 무조건 "join-application" 폴더에 저장됩니다.
+     *
+     * @param file 업로드할 파일 (MultipartFile)
+     * @param dir  (선택) S3 내 저장할 폴더명 (기본값: "common")
+     * @return 업로드된 파일의 전체 URL (String)
      */
     @Operation(summary = "가입 신청 이미지 업로드", description = "가입 신청서 작성 시 프로필 이미지를 S3(join-application 폴더)에 업로드하고 URL을 반환합니다.")
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Map<String, String>> uploadJoinApplicationImage(
-            @RequestPart(value = "file") MultipartFile file
+    public ResponseEntity<Map<String, String>> uploadFile(
+            @RequestPart(value = "file") MultipartFile file,
+            @RequestParam(value = "dir", required = false, defaultValue = "common") String dir
     ) {
         // "join-application" 폴더에 이미지 저장
-        String fileUrl = s3Service.uploadFile(file, "join-application");
+        String fileUrl = s3Service.uploadFile(file, dir);
 
         // URL 반환
         Map<String, String> response = new HashMap<>();
