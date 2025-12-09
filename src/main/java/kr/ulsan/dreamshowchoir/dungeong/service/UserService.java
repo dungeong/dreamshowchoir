@@ -294,6 +294,7 @@ public class UserService {
                 .interests("-")
                 .myDream("-")
                 .hashTags("")
+                .profileImageKey("")
                 .build();
 
         memberProfileRepository.save(newProfile);
