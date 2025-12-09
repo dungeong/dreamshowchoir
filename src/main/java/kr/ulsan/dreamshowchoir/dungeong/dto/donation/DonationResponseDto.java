@@ -25,13 +25,20 @@ public class DonationResponseDto {
      */
     public DonationResponseDto(Donation donation) {
         this.donationId = donation.getDonationId();
-        this.userId = donation.getUser().getUserId();
         this.amount = donation.getAmount();
         this.type = donation.getType();
         this.status = donation.getStatus();
         this.createdAt = donation.getCreatedAt();
-        this.donorName = donation.getUser().getName();
-        this.donorEmail = donation.getUser().getEmail();
-        this.donorPhone = donation.getUser().getPhoneNumber();
+        if (donation.getUser() != null) {
+            this.userId = donation.getUser().getUserId();
+            this.donorName = donation.getUser().getName();
+            this.donorEmail = donation.getUser().getEmail();
+            this.donorPhone = donation.getUser().getPhoneNumber();
+        } else {
+            this.userId = null;
+            this.donorName = null;
+            this.donorEmail = null;
+            this.donorPhone = null;
+        }
     }
 }
