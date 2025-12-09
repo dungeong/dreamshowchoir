@@ -10,6 +10,7 @@ public class BannerResponseDto {
     private final String description;
     private final String imageUrl;
     private final Integer orderIndex;
+    private final Boolean isActive;
 
     public BannerResponseDto(Banner banner) {
         this.bannerId = banner.getBannerId();
@@ -17,5 +18,6 @@ public class BannerResponseDto {
         this.description = banner.getDescription();
         this.imageUrl = banner.getImageKey();
         this.orderIndex = banner.getOrderIndex();
+        this.isActive = banner.getIsActive();
     }
 }
