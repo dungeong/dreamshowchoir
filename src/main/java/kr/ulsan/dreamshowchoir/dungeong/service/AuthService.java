@@ -15,12 +15,16 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -156,13 +160,12 @@ public class AuthService {
             throw new JwtException("만료된 Refresh Token입니다.");
         }
 
-        // 인증 정보 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(refreshTokenValue);
+        Authentication authentication = getAuthentication(refreshToken);
 
-        // 새 Access Token 발급
+        // 새 Access Token 발급 (이제 에러 안 남!)
         String newAccessToken = jwtTokenProvider.createToken(authentication);
 
-        // (옵션) Refresh Token Rotation: 보안 강화를 위해 Refresh Token도 함께 교체
+        // Refresh Token Rotation: 보안 강화를 위해 Refresh Token도 함께 교체
         String newRefreshTokenValue = jwtTokenProvider.createRefreshToken(authentication);
         LocalDateTime newExpiresAt = jwtTokenProvider.getRefreshTokenExpiryDate(newRefreshTokenValue);
         refreshToken.updateToken(newRefreshTokenValue, newExpiresAt);
@@ -178,6 +181,21 @@ public class AuthService {
                 .refreshToken("") // 쿠키로 전달되므로 비워둠
                 .accessTokenExpiresIn(jwtTokenProvider.getTokenValidityInMilliseconds()) // 만료 시간 추가
                 .build();
+    }
+
+    private static Authentication getAuthentication(RefreshToken refreshToken) {
+        User user = refreshToken.getUser(); // DB에서 가져온 유저
+
+        // User 엔티티를 기반으로 UserDetails(CustomUserDetails) 생성
+        // (CustomUserDetails 생성자가 User 객체를 받도록 되어 있다고 가정)
+        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getKey());
+
+        // Authentication 객체 직접 생성 (Principal에 userId 넣기)
+        return new UsernamePasswordAuthenticationToken(
+                user.getUserId(),             // Principal (보통 ID를 넣습니다)
+                "",                           // Credentials (비밀번호는 필요 없음)
+                Collections.singleton(authority) // Authorities (권한 목록)
+        );
     }
 
     /**

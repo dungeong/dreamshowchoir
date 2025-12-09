@@ -37,14 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 토큰 유효성 검증
         // (StringUtils.hasText: null, "", " "가 아닌지 확인)
-        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+        try {
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
 
-            // 토큰이 유효하면, 토큰에서 Authentication(인증 정보) 객체를 가져옴
-            Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
+                // 토큰이 유효하면, 토큰에서 Authentication(인증 정보) 객체를 가져옴
+                Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
 
-            // SecurityContextHolder에 인증 정보를 저장
-            // (이 코드가 실행되면, Spring Security는 이 요청을 '인증된 사용자'로 간주)
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+                // SecurityContextHolder에 인증 정보를 저장
+                // (이 코드가 실행되면, Spring Security는 이 요청을 '인증된 사용자'로 간주)
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+        } catch (Exception e) {
+            request.setAttribute("exception", e);
         }
 
         // 다음 필터로 요청 전달
