@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.*;
@@ -22,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final MemberProfileRepository memberProfileRepository;
 
     /**
      * OAuth 로그인 후, 추가 필수 정보(핸드폰, 생년월일 등)를 입력받아 저장한다.
@@ -261,7 +263,42 @@ public class UserService {
         // 권한 변경
         user.updateRole(newRole);
 
+        // MEMBER 또는 ADMIN으로 승격 시, 프로필이 없으면 자동 생성
+        if (newRole == Role.MEMBER || newRole == Role.ADMIN) {
+            if (user.getMemberProfile() == null) {
+                createDefaultMemberProfile(user);
+            }
+        } else if (newRole == Role.GUEST) {
+            // 프로필이 있으면 '자동 삭제'
+            if (user.getMemberProfile() != null) {
+                // DB에서 삭제
+                memberProfileRepository.delete(user.getMemberProfile());
+
+                // 영속성 컨텍스트(메모리)에 있는 User 객체에서도 끊어줘야 이 트랜잭션 안에서 즉시 반영됨
+                user.setMemberProfile(null);
+            }
+        }
+
         // 변경된 정보 반환
         return new UserResponseDto(user, user.getMemberProfile());
+    }
+
+    /**
+     * 기본 MemberProfile 생성 헬퍼 메소드
+     */
+    private void createDefaultMemberProfile(User user) {
+        MemberProfile newProfile = MemberProfile.builder()
+                .user(user)
+                .isPublic(false)
+                .part("-")
+                .interests("-")
+                .myDream("-")
+                .hashTags("")
+                .build();
+
+        memberProfileRepository.save(newProfile);
+
+        // 영속성 컨텍스트에 있는 User 객체에도 프로필을 연결해줘야 리턴되는 DTO에 즉시 반영됨
+        user.setMemberProfile(newProfile);
     }
 }
