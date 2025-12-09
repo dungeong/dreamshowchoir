@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Entity
 @Table(name = "\"WithdrawalHistory\"",
         uniqueConstraints = @UniqueConstraint(
                 name = "UQ_WithdrawalHistory_OAuth",

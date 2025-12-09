@@ -1,6 +1,7 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.user;
 
 import jakarta.persistence.*;
+import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseAuditEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "\"User\"")
 @DynamicUpdate      // 수정 시 변경된 필드만 update
-public class User extends BaseTimeEntity {
+public class User extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

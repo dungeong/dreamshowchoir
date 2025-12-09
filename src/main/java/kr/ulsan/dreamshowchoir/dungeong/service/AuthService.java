@@ -54,9 +54,11 @@ public class AuthService {
     public User loadOrRegisterUser(String provider, String oauthId, String email, String name, String profileImageKey,
                                    String phoneNumber, LocalDate birthDate, String gender) {
 
-        // 6개월 내 탈퇴한 사람인지 찾음
-        Optional<WithdrawalHistory> history = withdrawalHistoryRepository.findByOauthProviderAndOauthId(provider, oauthId);
-
+        // 탈퇴 기록 확인 및 탈퇴 후 6개월 미만 가입 차단
+        withdrawalHistoryRepository.findByOauthProviderAndOauthId(provider, oauthId)
+                .ifPresent(history -> {
+                    throw new IllegalStateException("탈퇴 후 6개월 내에는 재가입할 수 없습니다. (탈퇴일: " + history.getWithdrawnAt().toLocalDate() + ")");
+                });
         // DB에서 OAuth 정보로 사용자를 찾음
         Optional<User> optionalUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
 
