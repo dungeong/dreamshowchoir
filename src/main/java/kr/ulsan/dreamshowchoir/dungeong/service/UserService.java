@@ -93,7 +93,7 @@ public class UserService {
         );
 
         // 단원(MEMBER)이라면 프로필 정보도 수정
-        if (user.getRole() == Role.MEMBER) {
+        if (user.getRole() == Role.MEMBER || user.getRole() == Role.ADMIN) {
             MemberProfile profile = user.getMemberProfile();
 
             // 만약 프로필이 없다면 생성 (방어 코드)
