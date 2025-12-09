@@ -13,6 +13,7 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationRequestDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonationResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.donation.DonorResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -131,9 +133,12 @@ public class DonationService {
             throw new IllegalArgumentException("요청 상태(COMPLETED/FAILED)가 올바르지 않습니다.");
         }
 
-        // 후원자에게 알림 생성 (알림 타입은 임의로 지정)
-        notificationService.createNotification(donator, notificationType, notificationMessage);
-
+        if (donator != null) {
+            // 후원자에게 알림 생성
+            notificationService.createNotification(donator, notificationType, notificationMessage);
+        } else {
+            log.info("탈퇴한 회원의 후원 처리(ID: {}", donationId);
+        }
         // 변경된 후원 정보 반환
         return new DonationResponseDto(donation);
     }
