@@ -1,16 +1,15 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.post;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ public class Post extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "TITLE", nullable = false)
@@ -40,12 +40,12 @@ public class Post extends BaseTimeEntity {
     private String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImage> postImages = new ArrayList<>();
+    private final List<PostImage> postImages = new ArrayList<>();
 
     // 댓글 리스트 매핑 + 성능 최적화(@BatchSize)
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 100) // 목록 조회 시 댓글 개수 셀 때 쿼리 한 번으로 해결
-    private List<Comment> comments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
 
     // 생성자
     @Builder

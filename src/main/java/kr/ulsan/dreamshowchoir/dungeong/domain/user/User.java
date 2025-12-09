@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
@@ -13,8 +11,6 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "\"User\"")
-@SQLDelete(sql = "UPDATE \"User\" SET \"DELETED_AT\" = CURRENT_TIMESTAMP WHERE \"USER_ID\" = ?")
-@SQLRestriction("\"DELETED_AT\" IS NULL")
 @DynamicUpdate      // 수정 시 변경된 필드만 update
 public class User extends BaseTimeEntity {
 

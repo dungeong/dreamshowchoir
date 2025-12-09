@@ -1,15 +1,14 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.post;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +30,7 @@ public class Comment extends BaseTimeEntity { // [변경] 상속 적용
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")

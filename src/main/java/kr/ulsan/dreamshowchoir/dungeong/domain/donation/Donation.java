@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -31,7 +33,8 @@ public class Donation {
     private Long amount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE", nullable = false)
+    @Column(name = "TYPE")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private DonationType type;
 
     @Enumerated(EnumType.STRING)

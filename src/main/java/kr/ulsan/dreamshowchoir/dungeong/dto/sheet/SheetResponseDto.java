@@ -19,7 +19,12 @@ public class SheetResponseDto {
         this.fileName = sheet.getFileName();
         this.fileKey = sheet.getFileKey();
         this.fileSize = sheet.getFileSize();
-        this.uploaderName = sheet.getUser().getName();
+        // Null 체크
+        if (sheet.getUser() != null) {
+            this.uploaderName = sheet.getUser().getName();
+        } else {
+            this.uploaderName = "알 수 없음";
+        }
         this.createdAt = sheet.getCreatedAt();
     }
 }

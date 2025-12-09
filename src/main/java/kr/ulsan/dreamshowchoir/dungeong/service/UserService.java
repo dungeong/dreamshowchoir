@@ -4,8 +4,10 @@ import jakarta.persistence.EntityNotFoundException;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.WithdrawalHistory;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.WithdrawalHistoryRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.common.PageResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.*;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final MemberProfileRepository memberProfileRepository;
+    private final WithdrawalHistoryRepository withdrawalHistoryRepository;
 
     /**
      * OAuth 로그인 후, 추가 필수 정보(핸드폰, 생년월일 등)를 입력받아 저장한다.
@@ -128,12 +131,24 @@ public class UserService {
      * - DB: Soft Delete
      * - OAuth: (선택사항) 연동 해제 로직이 필요하면 여기에 추가
      */
+    @Transactional
     public void withdraw(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
+        // 재가입 방지를 위한 기록 남기기 (6개월 보관용)
+        WithdrawalHistory history = WithdrawalHistory.builder()
+                .oauthProvider(user.getOauthProvider())
+                .oauthId(user.getOauthId())
+                .email(user.getEmail())
+                .build();
+        withdrawalHistoryRepository.save(history); // Repository 생성 필요
+
+        // S3 이미지 삭제
+        if (user.getProfileImageKey() != null) {
+            s3Service.deleteFile(user.getProfileImageKey());
+        }
         // 탈퇴 시 연관된 MemberProfile 등은 Cascade 설정에 따라 처리됨.
-        // User 엔티티에 @SQLDelete가 적용되어 있으므로 delete() 호출 시 Soft Delete 됨.
         userRepository.delete(user);
     }
 

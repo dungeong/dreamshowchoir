@@ -1,15 +1,15 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.notice;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,8 @@ public class Notice extends BaseTimeEntity {
     private Long noticeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "USER_ID")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private User user;
 
     @Column(name = "TITLE", nullable = false)

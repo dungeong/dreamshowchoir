@@ -2,6 +2,7 @@ package kr.ulsan.dreamshowchoir.dungeong.dto.gallery;
 
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.Gallery;
 import kr.ulsan.dreamshowchoir.dungeong.domain.gallery.GalleryMedia;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import lombok.Getter;
 
@@ -27,14 +28,19 @@ public class GalleryResponseDto {
         this.title = gallery.getTitle();
         this.description = gallery.getDescription();
 
-        // UserResponseDto 생성 (User와 Profile 모두 전달)
-        this.author = new UserResponseDto(gallery.getUser(), gallery.getUser().getMemberProfile());
+        User user = gallery.getUser();
 
+        // UserResponseDto 생성 (User와 Profile 모두 전달)
+        if (user != null) {
+            this.author = new UserResponseDto(user, user.getMemberProfile());
+        } else {
+            this.author = null;
+        }
         this.createdAt = gallery.getCreatedAt();
 
         // 엔티티 리스트를 DTO 리스트로 변환
         this.mediaList = mediaListEntity.stream()
-                .map(media -> new GalleryMediaResponseDto(media))
+                .map(GalleryMediaResponseDto::new)
                 .collect(Collectors.toList());
     }
 }

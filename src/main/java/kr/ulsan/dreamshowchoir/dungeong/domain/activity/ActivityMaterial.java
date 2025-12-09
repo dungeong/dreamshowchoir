@@ -1,12 +1,11 @@
 package kr.ulsan.dreamshowchoir.dungeong.domain.activity;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
 import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,7 +24,8 @@ public class ActivityMaterial extends BaseTimeEntity {
     private Long materialId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @JoinColumn(name = "USER_ID")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private User user;
 
     @Column(name = "TITLE", nullable = false)

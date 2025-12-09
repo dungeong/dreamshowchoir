@@ -26,8 +26,14 @@ public class NoticeResponseDto {
         this.noticeId = notice.getNoticeId();
         this.title = notice.getTitle();
         this.content = notice.getContent();
-        this.authorName = notice.getUser().getName();
-        this.authorId = notice.getUser().getUserId();
+        // Null 체크
+        if (notice.getUser() != null) {
+            this.authorName = notice.getUser().getName();
+            this.authorId = notice.getUser().getUserId();
+        } else {
+            this.authorName = "알 수 없음";
+            this.authorId = null;
+        }
         this.createdAt = notice.getCreatedAt();
         this.updatedAt = notice.getUpdatedAt();
 

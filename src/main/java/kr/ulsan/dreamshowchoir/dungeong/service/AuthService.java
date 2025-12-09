@@ -10,11 +10,14 @@ import kr.ulsan.dreamshowchoir.dungeong.domain.auth.repository.RefreshTokenRepos
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.WithdrawalHistory;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
+import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.WithdrawalHistoryRepository;
 import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,6 +38,7 @@ public class AuthService {
     private final MemberProfileRepository memberProfileRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final WithdrawalHistoryRepository withdrawalHistoryRepository;
 
     /**
      * OAuth2 로그인 시, DB에 사용자가 없으면 회원가입, 있으면 정보를 업데이트한다.
@@ -49,6 +53,9 @@ public class AuthService {
     @Transactional
     public User loadOrRegisterUser(String provider, String oauthId, String email, String name, String profileImageKey,
                                    String phoneNumber, LocalDate birthDate, String gender) {
+
+        // 6개월 내 탈퇴한 사람인지 찾음
+        Optional<WithdrawalHistory> history = withdrawalHistoryRepository.findByOauthProviderAndOauthId(provider, oauthId);
 
         // DB에서 OAuth 정보로 사용자를 찾음
         Optional<User> optionalUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
@@ -230,5 +237,12 @@ public class AuthService {
         cookie.setPath("/");
         cookie.setMaxAge(0); // 즉시 만료
         response.addCookie(cookie);
+    }
+
+    @Scheduled(cron = "0 0 3 * * *") // 매일 새벽 3시
+    @Transactional
+    public void cleanupWithdrawalHistory() {
+        LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(6);
+        withdrawalHistoryRepository.deleteByWithdrawnAtBefore(sixMonthsAgo);
     }
 }
