@@ -201,7 +201,7 @@ public class UserService {
 
         if ("MEMBER".equalsIgnoreCase(target)) {
             // [단원 프로필 수정]
-            if (user.getRole() != Role.MEMBER || user.getMemberProfile() == null) {
+            if ((user.getRole() != Role.MEMBER && user.getRole() != Role.ADMIN) || user.getMemberProfile() == null) {
                 throw new IllegalStateException("정단원만 단원 프로필 이미지를 설정할 수 있습니다.");
             }
             oldImageKey = user.getMemberProfile().getProfileImageKey();
