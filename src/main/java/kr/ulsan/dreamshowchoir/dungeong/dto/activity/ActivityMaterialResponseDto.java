@@ -14,6 +14,8 @@ public class ActivityMaterialResponseDto {
     private final String fileKey;
     private final Long fileSize;
     private final LocalDateTime createdAt;
+    private final Long userId;
+    private final String authorName;
 
     public ActivityMaterialResponseDto(ActivityMaterial material) {
         this.materialId = material.getMaterialId();
@@ -23,5 +25,12 @@ public class ActivityMaterialResponseDto {
         this.fileKey = material.getFileKey();
         this.fileSize = material.getFileSize();
         this.createdAt = material.getCreatedAt();
+        if (material.getUser() != null) {
+            this.userId = material.getUser().getUserId();
+            this.authorName = material.getUser().getName();
+        } else {
+            this.userId = null;
+            this.authorName = "알 수 없는 관리자";
+        }
     }
 }
