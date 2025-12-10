@@ -20,4 +20,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      */
     @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.postId = :postId AND p.deletedAt IS NULL")
     Optional<Post> findByIdWithUser(Long postId);
+
+    /**
+     * 최근 게시글 5개 조회 (관리자 대시보드용)
+     */
+    @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.deletedAt IS NULL ORDER BY p.createdAt DESC")
+    java.util.List<Post> findTop5ByDeletedAtIsNullOrderByCreatedAtDesc(Pageable pageable);
 }

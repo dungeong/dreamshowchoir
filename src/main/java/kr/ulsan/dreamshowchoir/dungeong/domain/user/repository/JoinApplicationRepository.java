@@ -20,4 +20,7 @@ public interface JoinApplicationRepository extends JpaRepository<JoinApplication
     // 특정 유저의 신청 내역을 최신순으로 모두 조회 (List 반환)
     List<JoinApplication> findAllByUserOrderByCreatedAtDesc(User user);
 
+    // 상태별 건수 (관리자 메인 대시보드용)
+    long countByStatus(JoinStatus status);
+
 }

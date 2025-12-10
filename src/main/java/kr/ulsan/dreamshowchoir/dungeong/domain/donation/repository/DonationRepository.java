@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -21,4 +22,15 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
             "WHERE d.status = 'COMPLETED' " +
             "ORDER BY d.amount DESC, d.createdAt DESC")
     List<Donation> findAllCompletedDonations();
+
+    // 상태별 건수 (관리자 메인 대시보드용)
+    long countByStatus(DonationStatus status);
+
+    // 기간 내 완료된 후원 총액 (관리자 메인 대시보드용)
+    // COALESCE(SUM(d.amount), 0) handles null result
+    @Query("SELECT COALESCE(SUM(d.amount), 0) FROM Donation d " +
+            "WHERE d.status = 'COMPLETED' AND d.createdAt BETWEEN :start AND :end")
+    long sumCompletedAmountBetween(
+            @Param("start") java.time.LocalDateTime start,
+            @Param("end") java.time.LocalDateTime end);
 }

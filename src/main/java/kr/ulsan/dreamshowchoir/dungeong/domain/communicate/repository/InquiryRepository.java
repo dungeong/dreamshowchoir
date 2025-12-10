@@ -9,4 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     // (관리자용) 특정 상태의 문의 목록 페이징 조회
     Page<Inquiry> findAllByStatusOrderByCreatedAtDesc(InquiryStatus status, Pageable pageable);
+
+    // 상태별 건수 (관리자 메인 대시보드용)
+    long countByStatus(InquiryStatus status);
 }
