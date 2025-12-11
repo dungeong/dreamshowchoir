@@ -54,7 +54,7 @@ public class SiteContentService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 키의 콘텐츠를 찾을 수 없습니다: " + contentKey));
 
         // 엔티티 헬퍼 메소드로 수정
-        content.update(requestDto.getTitle(), requestDto.getContent());
+        content.update(requestDto.getContent());
 
         // updatedAt 갱신을 위해 flush (SiteContent는 Auditing 사용)
         siteContentRepository.flush();

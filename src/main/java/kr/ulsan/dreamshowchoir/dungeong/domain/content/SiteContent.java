@@ -22,9 +22,6 @@ public class SiteContent {
     @Column(name = "CONTENT_KEY")
     private String contentKey; // "RECRUIT_GUIDE", "DONATION_GUIDE"
 
-    @Column(name = "TITLE", nullable = false)
-    private String title;
-
     @Column(name = "CONTENT", columnDefinition = "TEXT")
     private String content;
 
@@ -35,8 +32,7 @@ public class SiteContent {
     /**
      * 콘텐츠 수정 (제목, 내용)
      */
-    public void update(String title, String content) {
-        this.title = title;
+    public void update(String content) {
         this.content = content;
     }
 }

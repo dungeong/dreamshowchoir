@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 public class SiteContentResponseDto {
 
     private final String contentKey;
-    private final String title;
     private final String content;
     private final LocalDateTime updatedAt;
 
@@ -18,7 +17,6 @@ public class SiteContentResponseDto {
      */
     public SiteContentResponseDto(SiteContent siteContent) {
         this.contentKey = siteContent.getContentKey();
-        this.title = siteContent.getTitle();
         this.content = siteContent.getContent();
         this.updatedAt = siteContent.getUpdatedAt();
     }
