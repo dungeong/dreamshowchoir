@@ -11,11 +11,13 @@ import kr.ulsan.dreamshowchoir.dungeong.dto.auth.JwtTokenDto;
 import kr.ulsan.dreamshowchoir.dungeong.dto.user.UserResponseDto;
 import kr.ulsan.dreamshowchoir.dungeong.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "Auth (인증)", description = "사용자 인증 및 정보 관련 API")
 @RestController
 @RequestMapping("/api/auth")
@@ -62,6 +64,7 @@ public class AuthController {
             @CookieValue(value = "refresh_token", required = false) String refreshToken,
             HttpServletResponse response
     ) {
+        log.info("refreshAccessToken() 실행됨");
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 쿠키가 없으면 401
         }

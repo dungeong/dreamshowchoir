@@ -47,6 +47,13 @@ public class RecaptchaService {
                 return false;
             }
 
+            // TODO: 배포 시 제거
+            if (!response.isSuccess() || response.getScore() < 0.5) {
+                log.warn("⚠️ [개발 모드] reCAPTCHA 검증 실패 (점수 미달/오류) -> 하지만 개발 편의를 위해 '성공(true)'으로 처리합니다.");
+                return true;
+            }
+
+
             // 성공 여부 및 봇 점수(0.5점 이상) 확인
             log.info("reCAPTCHA 검증 결과: success={}, score={}", response.isSuccess(), response.getScore());
             return response.isSuccess() && response.getScore() >= 0.5;

@@ -4,13 +4,13 @@ import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import kr.ulsan.dreamshowchoir.dungeong.config.auth.UserPrincipal;
 import kr.ulsan.dreamshowchoir.dungeong.config.jwt.JwtTokenProvider;
 import kr.ulsan.dreamshowchoir.dungeong.domain.auth.RefreshToken;
 import kr.ulsan.dreamshowchoir.dungeong.domain.auth.repository.RefreshTokenRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.MemberProfile;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.Role;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.User;
-import kr.ulsan.dreamshowchoir.dungeong.domain.user.WithdrawalHistory;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.MemberProfileRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.UserRepository;
 import kr.ulsan.dreamshowchoir.dungeong.domain.user.repository.WithdrawalHistoryRepository;
@@ -52,23 +52,24 @@ public class AuthService {
      */
     @Transactional
     public User loadOrRegisterUser(String provider, String oauthId, String email, String name, String profileImageKey,
-                                   String phoneNumber, LocalDate birthDate, String gender) {
+            String phoneNumber, LocalDate birthDate, String gender) {
 
         // 탈퇴 기록 확인 및 탈퇴 후 6개월 미만 가입 차단
         withdrawalHistoryRepository.findByOauthProviderAndOauthId(provider, oauthId)
                 .ifPresent(history -> {
-                    throw new IllegalStateException("탈퇴 후 6개월 내에는 재가입할 수 없습니다. (탈퇴일: " + history.getWithdrawnAt().toLocalDate() + ")");
+                    throw new IllegalStateException(
+                            "탈퇴 후 6개월 내에는 재가입할 수 없습니다. (탈퇴일: " + history.getWithdrawnAt().toLocalDate() + ")");
                 });
         // DB에서 OAuth 정보로 사용자를 찾음
         Optional<User> optionalUser = userRepository.findByOauthProviderAndOauthId(provider, oauthId);
 
         User user;
-        if (optionalUser.isPresent()) {     // 이미 가입된 사용자인 경우 (로그인)
+        if (optionalUser.isPresent()) { // 이미 가입된 사용자인 경우 (로그인)
             user = optionalUser.get();
             // OAuth 프로필 정보가 변경되었을 수 있으니, 이름과 프로필 사진을 업데이트함
             user.updateOAuthInfo(name, profileImageKey);
             // @Transactional 덕분에, save()를 호출하지 않아도 더티 체킹으로 DB에 자동 반영됨
-        } else {        // 처음 방문한 사용자인 경우 (자동 회원가입)
+        } else { // 처음 방문한 사용자인 경우 (자동 회원가입)
             user = User.builder()
                     .oauthProvider(provider)
                     .oauthId(oauthId)
@@ -90,14 +91,15 @@ public class AuthService {
     /**
      * 현재 로그인 된 사용자의 ID로 상세 정보를 조회
      *
-     * @param userId    현재 로그인 된 사용자 Id
+     * @param userId 현재 로그인 된 사용자 Id
      * @return 로그인한 사용자의 상세 정보 DTO
      */
     @Transactional(readOnly = true)
     public UserResponseDto getUserInfo(Long userId) {
 
         // User 조회 (없으면 예외 발생)
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저를 찾을 수 없습니다. ID : " + userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 ID의 유저를 찾을 수 없습니다. ID : " + userId));
 
         // MemberProfile 조회 (없으면 null)
         MemberProfile profile = memberProfileRepository.findById(userId).orElse(null);
@@ -192,18 +194,18 @@ public class AuthService {
                 .build();
     }
 
-    private static Authentication getAuthentication(RefreshToken refreshToken) {
-        User user = refreshToken.getUser(); // DB에서 가져온 유저
+    private Authentication getAuthentication(RefreshToken refreshToken) {
+        // 리프레시 토큰에서 User 엔티티 가져오기
+        User user = refreshToken.getUser();
 
-        // User 엔티티를 기반으로 UserDetails(CustomUserDetails) 생성
-        // (CustomUserDetails 생성자가 User 객체를 받도록 되어 있다고 가정)
-        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().getKey());
+        // 생성자를 통해 UserPrincipal 객체 생성 (create 메서드 대신 new 사용)
+        UserPrincipal principal = new UserPrincipal(user);
 
-        // Authentication 객체 직접 생성 (Principal에 userId 넣기)
+        // Authentication 객체 생성
         return new UsernamePasswordAuthenticationToken(
-                user.getUserId(),             // Principal (보통 ID를 넣습니다)
-                "",                           // Credentials (비밀번호는 필요 없음)
-                Collections.singleton(authority) // Authorities (권한 목록)
+                principal,
+                "",
+                principal.getAuthorities()
         );
     }
 

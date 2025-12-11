@@ -60,9 +60,7 @@ spring:
       # 전체 요청 최대 크기 (파일 여러 개 합친 크기, 예: 200MB)
       max-request-size: 200MB
 
-# Refresh Token 만료 시간 (예: 14일 = 14 * 24 * 60 * 60 * 1000)
-jwt:
-  refresh-token-validity-in-milliseconds: 1209600000
+
 
 frontend:
   redirect-url: http://localhost:3000/oauth/callback

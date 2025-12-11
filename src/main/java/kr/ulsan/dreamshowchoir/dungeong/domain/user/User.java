@@ -2,7 +2,6 @@ package kr.ulsan.dreamshowchoir.dungeong.domain.user;
 
 import jakarta.persistence.*;
 import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseAuditEntity;
-import kr.ulsan.dreamshowchoir.dungeong.domain.common.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "\"User\"")
-@DynamicUpdate      // 수정 시 변경된 필드만 update
+@DynamicUpdate // 수정 시 변경된 필드만 update
 public class User extends BaseAuditEntity {
 
     @Id
@@ -60,7 +59,8 @@ public class User extends BaseAuditEntity {
 
     // 생성자
     @Builder
-    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role, Boolean termsAgreed, String phoneNumber, LocalDate birthDate, String gender) {
+    public User(String oauthProvider, String oauthId, String email, String name, String profileImageKey, Role role,
+            Boolean termsAgreed, String phoneNumber, LocalDate birthDate, String gender) {
         this.oauthProvider = oauthProvider;
         this.oauthId = oauthId;
         this.email = email;
@@ -86,7 +86,8 @@ public class User extends BaseAuditEntity {
     }
 
     // 추가 정보 업데이트 메소드 (Onboarding)
-    public void updateAdditionalInfo(String name, String phoneNumber, LocalDate birthDate, String gender, Boolean termsAgreed) {
+    public void updateAdditionalInfo(String name, String phoneNumber, LocalDate birthDate, String gender,
+            Boolean termsAgreed) {
         this.name = name; // 실명으로 덮어쓰기 (OAuth 이름이 닉네임일 수 있으므로)
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
