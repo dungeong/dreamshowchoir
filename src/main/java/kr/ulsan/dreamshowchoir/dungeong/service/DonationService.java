@@ -150,7 +150,11 @@ public class DonationService {
     @Transactional(readOnly = true)
     public List<DonorResponseDto> getDonorsHallOfFame() {
         return donationRepository.findAllCompletedDonations().stream()
-                .map(DonorResponseDto::new)
+                .map(d -> {
+                    // ★ 여기서 유저가 null인지 체크해야 뻗지 않습니다!
+                    String donorName = (d.getUser() != null) ? d.getUser().getName() : null;
+                    return new DonorResponseDto(d);
+                })
                 .collect(Collectors.toList());
     }
 }

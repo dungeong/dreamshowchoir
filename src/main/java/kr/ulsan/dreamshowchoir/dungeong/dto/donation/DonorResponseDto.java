@@ -14,8 +14,8 @@ public class DonorResponseDto {
     private final DonationType type;    // 후원 종류
 
     public DonorResponseDto(Donation donation) {
-        // Donation 엔티티에 별도 donorName 필드가 있다면 그걸 쓰고, 없으면 User의 이름을 씀
-        this.donorName = donation.getUser().getName();
+        // 유저가 있으면 이름을 넣고, 없으면 null을 넣음
+        this.donorName = (donation.getUser() != null) ? donation.getUser().getName() : null;
         this.amount = donation.getAmount();
         this.date = donation.getCreatedAt();
         this.type = donation.getType();

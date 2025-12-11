@@ -18,7 +18,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     Page<Donation> findByStatus(DonationStatus status, Pageable pageable);
 
     // 완료된 후원 목록 조회 (금액 내림차순 -> 최신순)
-    @Query("SELECT d FROM Donation d JOIN FETCH d.user " +
+    @Query("SELECT d FROM Donation d LEFT JOIN FETCH d.user " +  // <--- LEFT 추가!
             "WHERE d.status = 'COMPLETED' " +
             "ORDER BY d.amount DESC, d.createdAt DESC")
     List<Donation> findAllCompletedDonations();
