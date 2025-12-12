@@ -39,3 +39,4 @@ out/
 # 민감한 설정 파일 제외
 application-secret.yml
 /src/main/resources/google-credentials.json
+src/main/resources/application-prod.yml
